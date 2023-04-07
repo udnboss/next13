@@ -1,44 +1,31 @@
 import { NextRequest, NextResponse } from "next/server";
-import { Util } from "../../../util";
-import { IItem } from "../../classes";
 
-export async function GET(req: NextRequest, context: { params }) {
+import { IItem } from "../../classes";
+import { ServerUtil } from "../util";
+
+const tableName = 'items';
+
+export async function GET(req: NextRequest) {
 
     return NextResponse.json(
-        Util.itemsDbTable
+        await ServerUtil.dbSelect(tableName) as IItem
     )
 }
 
-export async function POST(req: NextRequest, context: { params }) {
-    const newItem = context.params as IItem;
-    Util.itemsDbTable.push(newItem);
+export async function POST(req: NextRequest) {
+    const newItem = await req.json() as IItem;
 
     return NextResponse.json(
-        newItem
+        await ServerUtil.dbInsert(tableName, newItem)
     )
 }
 
 export async function PUT(req: NextRequest) {
-    const updatedItem = JSON.parse(req.body as any) as IItem;
-    const index = Util.itemsDbTable.findIndex((item) => item.id == updatedItem.id);
-    if (index > -1) {
-        Util.itemsDbTable[index] = updatedItem;
-    }
+    const item = await req.json() as IItem;
 
     return NextResponse.json(
-        updatedItem
+        await ServerUtil.dbUpdate(tableName, item)
     )
 }
 
-export async function DELETE(req: NextRequest, context: { params }) {    
-    const index = Util.itemsDbTable.findIndex((item) => item.id == context.params.id);
-    const item = Util.itemsDbTable[index];
 
-    if (index > -1) {
-        Util.itemsDbTable.splice(index, 1);
-    }
-
-    return NextResponse.json(
-        item
-    )
-}

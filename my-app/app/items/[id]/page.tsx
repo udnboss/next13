@@ -1,16 +1,16 @@
 'use client';
 
 import { useEffect, useState } from "react";
-import { Util } from "../../../util";
+import { ClientUtil } from "../../../util";
 import { IItem } from "../../classes";
 
 async function getData(id:string) {
-    const json = await Util.get(`/api/items/${id}`) as unknown; 
+    const json = await ClientUtil.get(`/api/items/${id}`) as unknown; 
     return json as IItem;
 }
 
-async function updateData(item) {
-    const json = Util.put(`/api/items`, item) as unknown; 
+async function updateData(item:IItem) {
+    const json = ClientUtil.put(`/api/items`, item) as unknown; 
     return json as IItem;
 }
 
@@ -18,7 +18,7 @@ export default function ItemPage({params}){
     const [item, setItem] = useState<IItem>();
 
     useEffect(() => {
-        async function fetchData(id) {
+        async function fetchData(id:string) {
             setItem(await getData(id));
         }
 

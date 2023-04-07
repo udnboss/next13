@@ -4,6 +4,16 @@ const nextConfig = {
   experimental:{
     appDir: true
   },
+  headers: async () => {
+    return [
+      {
+        source: '/api/items/:id',
+        headers: [
+          { key: "Access-Control-Allow-Methods", value: "GET,OPTIONS,PATCH,DELETE,POST,PUT" }
+        ],
+      },
+    ]
+  },
   images: {
     remotePatterns: [
         {

@@ -1,17 +1,11 @@
-import { IItem } from "./app/classes";
 
-export class Util {
+export class ClientUtil {
     static server = 'http://localhost:8001';
-
-    static itemsDbTable = [
-        {id: '1', name: 'Item 1', category_id: null} as IItem,
-        {id: '2', name: 'Item 2', category_id: null} as IItem,
-        {id: '3', name: 'Item 3', category_id: null} as IItem
-    ];
     
     static get = async (path) => {
 
-        console.log(`sending get: ${this.server}${path}`)
+        console.log(`sending get: ${this.server}${path}`);
+
         const res = await fetch(`${this.server}${path}`, { cache: 'no-store' });
         if (!res.ok) {
             throw new Error(`Failed to get data: ${this.server}${path}`);
@@ -19,7 +13,7 @@ export class Util {
 
         const json = await res.json();
 
-        console.log('get result:' + json)
+        console.log('get result:' + json);
 
         return json;
     }
@@ -73,13 +67,13 @@ export class Util {
         });
 
         if (!res.ok) {
-            throw new Error('Failed to put data');
+            throw new Error('Failed to delete data');
         }
 
         const json = await res.json();
 
         console.log('delete result:' + json)
 
-        return json;
+        return json as boolean;
     }
 }

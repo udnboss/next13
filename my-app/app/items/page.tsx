@@ -3,21 +3,24 @@
 
 import Link from "next/link";
 import { FormEvent, useEffect, useState } from "react";
-import { Util } from "../../util";
+import { Button } from "react-bootstrap";
+import { ClientUtil } from "../../util";
 import { IItem } from "../classes"
+import { CreateItem } from "./create";
+
 
 async function getData() {
-    const json = await Util.get('/api/items') as unknown;
+    const json = await ClientUtil.get('/api/items') as unknown;
     return json as IItem[];
 }
 
-async function insertData(item) {
-    const json = Util.post('/api/items', item) as unknown;
+async function insertData(item:IItem) {
+    const json = ClientUtil.post('/api/items', item) as unknown;
     return json as IItem;
 }
 
-async function deleteData(item) {
-    return Util.delete(`/api/items/delete/${item.id}`) as unknown as IItem;
+async function deleteData(item:IItem) {
+    return ClientUtil.delete(`/api/items/${item.id}`) as unknown as boolean;
 }
 
 export default function ItemsPage() {
@@ -26,16 +29,24 @@ export default function ItemsPage() {
 
     useEffect( () => {
         async function fetchData () {
-            const it = await getData();
-            setItems(it);
+            setItems(await getData());
         };
         fetchData();
     }, [])
     
     const handleDelete = async (item:IItem) => {
         setPending(true);
-        await deleteData(item);        
-        
+        const deleted = await deleteData(item);        
+        if(deleted) {
+            setItems(await getData());
+        }
+        setPending(false);
+    }
+
+    const handleCreate = async (item:IItem) => {
+        setPending(true);
+        const inserted = await insertData(item);
+        setItems(await getData());
         setPending(false);
     }
 
@@ -43,39 +54,33 @@ export default function ItemsPage() {
         <div>
             <>
                 <h2>Items Page</h2>
-                {items?.map(item => (
-                    <div key={item.id}>
-                        <Link href={`/items/${item.id}`}>{item.name}</Link>
-                        <button disabled={pending} onClick={(e:FormEvent<HTMLButtonElement>) => handleDelete(item)}>Delete</button>
-                    </div>
-                ))}
-                <CreateItem></CreateItem>
+
+                <table className="table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {items?.map(item => (
+                            <tr key={item.id}>
+                                <td>
+                                    <Link href={`/items/${item.id}`}>{item.name}</Link>    
+                                </td>
+                                <td>
+                                    <Button variant="danger" disabled={pending} onClick={(e:FormEvent<HTMLButtonElement>) => handleDelete(item)}>
+                                        <i className="bi-trash"></i> Delete
+                                    </Button>
+                                </td>
+                            </tr>
+                        ))}    
+                    </tbody>
+                </table>
+
+                <CreateItem disabled={pending} onSubmit={handleCreate}></CreateItem>
             </>
         </div>
     )
 }
 
-export function CreateItem() {
-    const [item, setItem] = useState<IItem>({ id: '', name: '' } as IItem);
-
-    const handleForm = (e: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
-        setItem({
-            ...item,
-            [e.currentTarget.id]: e.currentTarget.value,
-        });
-    };
-
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        const inserted = await insertData(item);
-        setItem(inserted);
-    }
-
-    return (
-        <form onSubmit={handleSubmit}>
-            <input id="id" placeholder="id" value={item.id} onChange={handleForm} />
-            <textarea id="name" placeholder="name" value={item.name} onChange={handleForm} />
-            <button type="submit">Create</button>
-        </form>
-    );
-}

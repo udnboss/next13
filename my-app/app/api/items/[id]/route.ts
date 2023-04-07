@@ -1,12 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
-import { Util } from "../../../../util";
-import { IItem } from "../../../classes";
+import { ServerUtil } from "../../util";
 
-export async function GET(req: NextRequest, context: { params }) {
+const tableName = 'items';
 
-    const index = Util.itemsDbTable.findIndex((item) => item.id == context.params.id);
-    if (index > -1) {
-        return NextResponse.json(Util.itemsDbTable[index]);
+export async function GET(req: NextRequest, { params }) {
+
+    const item = await ServerUtil.dbSelect(tableName, params.id);
+    if (item) {
+        return NextResponse.json(item);
     }
 
+    return NextResponse.json({}, { status: 404});
+
+}
+
+export async function DELETE(req: NextRequest, { params }) {    
+    console.log(params)
+    return NextResponse.json(
+        await ServerUtil.dbDelete(tableName, params.id)
+    )
 }
