@@ -1,7 +1,9 @@
+import { ItemsProvider } from "./context";
+
 export default function ItemsLayout({ children }) {
     return (
-        <>
-        {children}
-        </>        
+        <ItemsProvider>
+            {children}    
+        </ItemsProvider>               
     )
 }

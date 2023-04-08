@@ -1,48 +1,40 @@
 'use client';
 
 import { useEffect, useState } from "react";
-import { ClientUtil } from "../../../util";
 import { IItem } from "../../classes";
 
-async function getData(id:string) {
-    const json = await ClientUtil.get(`/api/items/${id}`) as unknown; 
-    return json as IItem;
-}
+import { useRouter } from 'next/navigation';
+import { EditItem } from "../edit";
+import { useItemsContext } from "../context";
 
-async function updateData(item:IItem) {
-    const json = ClientUtil.put(`/api/items`, item) as unknown; 
-    return json as IItem;
-}
+
 
 export default function ItemPage({params}){
+    const router = useRouter();
+    const context = useItemsContext();
     const [item, setItem] = useState<IItem>();
 
     useEffect(() => {
         async function fetchData(id:string) {
-            setItem(await getData(id));
+            setItem(await context.getItem(id));
         }
 
         fetchData(params.id);
     }, [params.id]);
 
-    const handleForm = (e: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
-        setItem({
-            ...item,
-            [e.currentTarget.id]: e.currentTarget.value,
-        });
-    };
+    const handleSubmit = async (item:IItem) => {
+        const updated = await context.updateItem(item);
+        router.push('/items');
+    }
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        const updated = await updateData(item);
-        setItem(updated);
+    const handleDelete = async (item:IItem) => {
+        const deleted = await context.deleteItem(item);        
+        if(deleted) {
+            await context.getItems();
+        }
     }
 
     return ( item &&
-        <form onSubmit={handleSubmit}>
-            <input disabled={true} value={item.id} />
-            <textarea id="name" placeholder="name" value={item.name} onChange={handleForm} />
-            <button type="submit">Update</button>
-        </form>
+        <EditItem data={item} disabled={false} onSubmit={handleSubmit} mode="update" allowDelete={true} onDelete={handleDelete}></EditItem>
     );
 }

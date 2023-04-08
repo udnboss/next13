@@ -2,74 +2,63 @@
 'use client';
 
 import Link from "next/link";
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent } from "react";
 import { Button } from "react-bootstrap";
-import { ClientUtil } from "../../util";
 import { IItem } from "../classes"
-import { CreateItem } from "./create";
+import { useItemsContext } from "./context";
 
-
-async function getData() {
-    const json = await ClientUtil.get('/api/items') as unknown;
-    return json as IItem[];
-}
-
-async function insertData(item:IItem) {
-    const json = ClientUtil.post('/api/items', item) as unknown;
-    return json as IItem;
-}
-
-async function deleteData(item:IItem) {
-    return ClientUtil.delete(`/api/items/${item.id}`) as unknown as boolean;
-}
 
 export default function ItemsPage() {
-    const [pending, setPending] = useState<boolean>(false);
-    const [items, setItems] = useState<IItem[]>();
-
-    useEffect( () => {
-        async function fetchData () {
-            setItems(await getData());
-        };
-        fetchData();
-    }, [])
+    const context = useItemsContext();
     
     const handleDelete = async (item:IItem) => {
-        setPending(true);
-        const deleted = await deleteData(item);        
+        const deleted =  await context.deleteItem(item);        
         if(deleted) {
-            setItems(await getData());
+            context.getItems();
         }
-        setPending(false);
     }
 
-    const handleCreate = async (item:IItem) => {
-        setPending(true);
-        const inserted = await insertData(item);
-        setItems(await getData());
-        setPending(false);
+    // const handleCreate = async (item:IItem) => {
+    //     const inserted = await context.insertItem(item);
+    //     context.getItems();
+    // }
+
+    const handleRefresh = async () => {
+        await context.getItems();
     }
 
     return (
         <div>
             <>
                 <h2>Items Page</h2>
-
+                <div className="text-end">
+                    <Link href={`/items/create`} className="btn btn-success me-2">
+                        <i className="bi-plus-circle"></i> Add New Item
+                    </Link> 
+                    <Button onClick={handleRefresh}>
+                       <i className="bi-arrow-repeat"></i> Refresh
+                    </Button>
+                </div>
+                
                 <table className="table">
                     <thead>
                         <tr>
-                            <th>Name</th>
+                            <th><Link href={{
+                                    pathname: '/items',
+                                    query: { sortby: 'name', sortdir: context.query?.sortdir == 'desc' ? 'asc' : 'desc' },
+                                }}>Name</Link>
+                            </th>
                             <th></th>
                         </tr>
                     </thead>
                     <tbody>
-                        {items?.map(item => (
+                        {context.items?.map(item => (
                             <tr key={item.id}>
-                                <td>
-                                    <Link href={`/items/${item.id}`}>{item.name}</Link>    
+                                <td className="align-middle">
+                                    <Link href={`/items/${item.id}`} className="text-decoration-none">{item.name}</Link>    
                                 </td>
-                                <td>
-                                    <Button variant="danger" disabled={pending} onClick={(e:FormEvent<HTMLButtonElement>) => handleDelete(item)}>
+                                <td className="text-end">
+                                    <Button variant="danger" disabled={context.pending} onClick={(e:FormEvent<HTMLButtonElement>) => handleDelete(item)}>
                                         <i className="bi-trash"></i> Delete
                                     </Button>
                                 </td>
@@ -77,8 +66,6 @@ export default function ItemsPage() {
                         ))}    
                     </tbody>
                 </table>
-
-                <CreateItem disabled={pending} onSubmit={handleCreate}></CreateItem>
             </>
         </div>
     )
