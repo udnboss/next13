@@ -1,4 +1,5 @@
 import { promises as fs } from 'fs';
+import { ISort, ICondition, Operator, SortDirection } from '../classes';
 
 export class ServerUtil {
     static server = 'http://localhost:8001';
@@ -9,17 +10,82 @@ export class ServerUtil {
         return db;
     }
 
-    static dbSelect = async (table:string, id:string = null) => {
+    static dbSelect = async (table:string, where:ICondition[] = [], sort:ISort[] = []) => {
         const db = await this.dbConnect();
-        if(id !== null) {
-            const index = db[table].findIndex(x => x.id == id);
-            if(index > -1){
-                return db[table][index];    
+       
+        const results = (db[table] as any[]).filter((x, i) => {
+            for(const cond of where) {
+                const value = x[cond.column];
+
+                switch(cond.operator) {
+                    case Operator.Equals:
+                        if(value !== cond.value)
+                            return false;
+                        break;
+                    case Operator.Contains:
+                        if((value as string).indexOf(cond.value as string) === -1)
+                            return false;    
+                        break;
+                    case Operator.StartsWith:
+                        if(!(value as string).startsWith(cond.value as string))
+                            return false;
+                        break;
+                    case Operator.EndsWith:
+                        if(!(value as string).endsWith(cond.value as string))
+                            return false;
+                        break;
+                    case Operator.NotEquals:
+                        if(value === cond.value)
+                            return false;
+                        break;
+                    case Operator.GreaterThan:
+                        if(!(value > cond.value))
+                            return false;
+                        break;
+                    case Operator.LessThan:
+                        if(!(value < cond.value))
+                            return false;
+                        break;
+                    case Operator.IsIn:
+                        if((cond.value as unknown as any[]).indexOf(value) === -1)
+                            return false;
+                        break;
+                    case Operator.IsNotIn:
+                        if((cond.value as unknown as any[]).indexOf(value) !== -1)
+                            return false;
+                        break;
+                    case Operator.IsNull:
+                        if(value !== null)
+                            return false;
+                        break;
+                    case Operator.IsNotNull:
+                        if(value === null)
+                            return false;
+                        break;
+                }                     
             }
-            return null;
-            
+            return true;
+        });
+
+        console.log('RESULTS:');
+        console.dir(results);
+
+        if(sort.length > 0) {
+            results.sort((a, b) => {
+                for(const s of sort){
+                    const av = a[s.column];
+                    const bv = b[s.column];
+                    if(av < bv)
+                        return s.direction == SortDirection.Asc ? -1 : 1;
+                    if(av > bv)
+                        return s.direction == SortDirection.Asc ? 1 : -1;                
+                }
+
+                return 0;            
+            });    
         }
-        return db[table] as any[];
+
+        return results;
     }
 
     static dbInsert = async (table:string, record:any) => {

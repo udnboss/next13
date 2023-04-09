@@ -3,12 +3,13 @@
 import { createContext, ReactNode, useContext, useEffect, useState } from "react";
 import { ClientUtil } from "../../util";
 import { IItem, IItemQuery } from "../classes";
-import { useSearchParams } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 type itemsContextType = {
     items: IItem[];
     query: IItemQuery;
     pending: boolean;
+    searchItems:(search:string) => Promise<void>;
     getItems: () => Promise<IItem[]>;
     getItem: (id:string) => Promise<IItem>;
     insertItem: (item:IItem) => Promise<IItem>;
@@ -37,6 +38,9 @@ export const useItemsContext = () => {
 
 export function ItemsProvider({children}: Props) {
     const searchParams = useSearchParams();
+    const router = useRouter();
+    const pathname = usePathname();
+
     const [query, setQuery] = useState<IItemQuery>(null);
     const [items, setItems] = useState<IItem[]>();
     const [pending, setPending] = useState<boolean>(false);
@@ -52,6 +56,12 @@ export function ItemsProvider({children}: Props) {
         };
         fetchData();
     }, [query])
+
+    const searchItems = async (search:string) => {
+        const params = new URLSearchParams(searchParams as unknown as URLSearchParams);
+        params.set('search', search);
+        router.push(pathname + '?' + params.toString());
+    }
     
     const getItems = async () => { 
 
@@ -94,7 +104,7 @@ export function ItemsProvider({children}: Props) {
         return result;
     }
 
-    const value = {items, query, pending, getItems, deleteItem, insertItem, updateItem, getItem};
+    const value = {items, query, pending, searchItems, getItems, deleteItem, insertItem, updateItem, getItem};
         
     return (
         <ItemsContext.Provider value = {value}>

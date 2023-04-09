@@ -1,3 +1,34 @@
+export enum Operator {
+    Equals,
+    NotEquals,
+    GreaterThan,
+    LessThan,    
+    IsNull,
+    IsNotNull,
+    IsIn,
+    IsNotIn,
+    StartsWith,
+    EndsWith,
+    Contains
+
+}
+
+export enum SortDirection {
+    Asc = 'asc',
+    Desc = 'desc'
+}
+
+export interface ISort {
+    column: string;
+    direction: SortDirection;
+}
+
+export interface ICondition {
+    column: string;
+    operator: Operator;
+    value: string|number|boolean;
+}
+
 export interface IItemQuery {
     sortby: string;
     sortdir: string;

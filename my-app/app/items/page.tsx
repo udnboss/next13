@@ -2,14 +2,19 @@
 'use client';
 
 import Link from "next/link";
-import { FormEvent } from "react";
-import { Button } from "react-bootstrap";
+import { usePathname, useRouter } from "next/navigation";
+import { FormEvent, useState } from "react";
+import { Button, Col, FormControl, Row } from "react-bootstrap";
+import { useSearchParams } from "react-router-dom";
 import { IItem } from "../classes"
 import { useItemsContext } from "./context";
 
 
 export default function ItemsPage() {
+    
     const context = useItemsContext();
+    const [search, setSearch] = useState<string>('');
+
     
     const handleDelete = async (item:IItem) => {
         const deleted =  await context.deleteItem(item);        
@@ -18,10 +23,12 @@ export default function ItemsPage() {
         }
     }
 
-    // const handleCreate = async (item:IItem) => {
-    //     const inserted = await context.insertItem(item);
-    //     context.getItems();
-    // }
+    const handleSearch = async (e) => {
+        const search = e.target.value;
+        setSearch(search);
+        context.searchItems(search);
+              
+    }
 
     const handleRefresh = async () => {
         await context.getItems();
@@ -31,13 +38,20 @@ export default function ItemsPage() {
         <div>
             <>
                 <h2>Items Page</h2>
-                <div className="text-end">
-                    <Link href={`/items/create`} className="btn btn-success me-2">
-                        <i className="bi-plus-circle"></i> Add New Item
-                    </Link> 
-                    <Button onClick={handleRefresh}>
-                       <i className="bi-arrow-repeat"></i> Refresh
-                    </Button>
+                <div className="text-end mb-3">
+                    <Row>
+                        <Col sm="6">
+                            <FormControl type="text" placeholder="search" value={search} onChange={handleSearch}></FormControl>
+                        </Col>
+                        <Col>
+                            <Link href={`/items/create`} className="btn btn-success me-2">
+                                <i className="bi-plus-circle"></i> Add New Item
+                            </Link> 
+                            <Button onClick={handleRefresh}>
+                            <i className="bi-arrow-repeat"></i> Refresh
+                            </Button>
+                        </Col>
+                    </Row>
                 </div>
                 
                 <table className="table">
@@ -45,7 +59,7 @@ export default function ItemsPage() {
                         <tr>
                             <th><Link href={{
                                     pathname: '/items',
-                                    query: { sortby: 'name', sortdir: context.query?.sortdir == 'desc' ? 'asc' : 'desc' },
+                                    query: { sortby: 'name', search:search, sortdir: context.query?.sortdir == 'desc' ? 'asc' : 'desc' },
                                 }}>Name</Link>
                             </th>
                             <th></th>
