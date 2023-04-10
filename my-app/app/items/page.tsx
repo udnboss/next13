@@ -2,10 +2,8 @@
 'use client';
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 import { Button, Col, FormControl, Row } from "react-bootstrap";
-import { useSearchParams } from "react-router-dom";
 import { IItem } from "../classes"
 import { useItemsContext } from "./context";
 

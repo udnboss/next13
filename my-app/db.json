@@ -2,7 +2,7 @@
     "items": [
         {
             "id": "2",
-            "name": "Two tone town\n",
+            "name": "Two tone town",
             "category_id": null
         },
         {
@@ -17,6 +17,27 @@
         {
             "id": "5",
             "name": "6666666677777"
+        }
+    ],
+    "categories": [
+        {
+            "id": "1",
+            "name": "Tools...",
+            "category_id": null
+        },
+        {
+            "id": "2",
+            "name": "Electronics",
+            "category_id": null
+        },
+        {
+            "id": "3",
+            "name": "Computers",
+            "category_id": "2"
+        },
+        {
+            "id": "4",
+            "name": "Household"
         }
     ]
 }

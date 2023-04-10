@@ -20,7 +20,7 @@ export default function ItemPage({params}){
         }
 
         fetchData(params.id);
-    }, [params.id]);
+    }, [params.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const handleSubmit = async (item:IItem) => {
         const updated = await context.updateItem(item);
