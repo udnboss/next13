@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { ICategory } from "../../classes";
+import { notFound } from 'next/navigation';
 
 import { useRouter } from 'next/navigation';
 import { EditCategory } from "../edit";
@@ -14,16 +15,22 @@ export default function CategoryPage({params}){
     const loading = useSelector((state: categoriesStateType) => state.loading);
     const router = useRouter();
     const dispatch = useDispatch();
+    
+    const [category, setCategory] = useState<ICategory>();
 
     useEffect( () => {
         dispatch(getCategory(params.id) as unknown as AnyAction);        
     }, [params.id]) // eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(() => {
-        setCategory(selectedCategory)
-    }, [selectedCategory])
+        setCategory(selectedCategory);
+        if(selectedCategory === null) {
+            // router.push('/404');
+            notFound();
+        }
 
-    const [category, setCategory] = useState<ICategory>();
+        // console.log(selectedCategory);
+    }, [selectedCategory]) // eslint-disable-line react-hooks/exhaustive-deps
 
     const handleSubmit = async (category:ICategory) => {
         dispatch(updateCategory(category) as unknown as AnyAction);
@@ -34,7 +41,11 @@ export default function CategoryPage({params}){
         dispatch(deleteCategory(category) as unknown as AnyAction);
     }
 
-    return ( category &&
-        <EditCategory data={category} disabled={loading != 'idle'} onSubmit={handleSubmit} mode="update" allowDelete={true} onDelete={handleDelete}></EditCategory>
-    );
+    if(category) {
+        return ( 
+            <EditCategory data={category} disabled={loading != 'idle'} onSubmit={handleSubmit} mode="update" allowDelete={true} onDelete={handleDelete}></EditCategory>
+        );
+    }   
+    
+    
 }

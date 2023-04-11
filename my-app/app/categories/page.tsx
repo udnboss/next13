@@ -3,20 +3,25 @@
 
 import { AnyAction } from "@reduxjs/toolkit";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { FormEvent, useEffect, useState } from "react";
 import { Button, Col, FormControl, Row } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
-import { deleteCategory, getCategories, searchCategories, categoriesStateType } from "../../store/categorySlice";
+import { deleteCategory, getCategories, categoriesStateType } from "../../store/categorySlice";
 import { ICategory, ICategoryQuery } from "../classes"
 
 export default function CategoriesPage() {
     const searchParams = useSearchParams();
+    const router = useRouter();
+    const pathname = usePathname();
+    
     const categories = useSelector((state: categoriesStateType) => state.categories);
     const loading = useSelector((state: categoriesStateType) => state.loading);
     const query = useSelector((state: categoriesStateType) => state.query);
 
     const dispatch = useDispatch();
+    
+    const [search, setSearch] = useState<string>('');
 
     useEffect( () => {
         console.log('searchParams changed');
@@ -25,8 +30,6 @@ export default function CategoriesPage() {
         
     }, [searchParams]) // eslint-disable-line react-hooks/exhaustive-deps
     
-    const [search, setSearch] = useState<string>('');
-    
     const handleDelete = async (category:ICategory) => {
         dispatch(deleteCategory(category) as unknown as AnyAction);
     }
@@ -34,12 +37,15 @@ export default function CategoriesPage() {
     const handleSearch = async (e) => {
         const search = e.target.value;
         setSearch(search);
-        dispatch(searchCategories(search) as unknown as AnyAction);              
+        const params = new URLSearchParams(searchParams as unknown as URLSearchParams);
+        params.set('search', search);
+        router.push(pathname + '?' + params.toString());
+        handleRefresh();            
     }
 
     const handleRefresh = async () => {
-        const params = Object.fromEntries(searchParams.entries()) as unknown as ICategoryQuery;
-        dispatch(getCategories(params) as unknown as AnyAction);
+        const newQuery = Object.fromEntries(searchParams.entries()) as unknown as ICategoryQuery;
+        dispatch(getCategories(newQuery) as unknown as AnyAction);
     }
 
     return (

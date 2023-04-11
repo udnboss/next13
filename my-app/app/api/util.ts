@@ -1,5 +1,5 @@
 import { promises as fs } from 'fs';
-import { ISort, ICondition, Operator, SortDirection } from '../classes';
+import { ISort, ICondition, Operator, SortDirection, IQueryResult, IQuery } from '../classes';
 
 export class ServerUtil {
     static server = 'http://localhost:8001';
@@ -85,7 +85,7 @@ export class ServerUtil {
             });    
         }
 
-        return results;
+        return {result: results, count: results.length, query: null, total: results.length} as IQueryResult<IQuery, any>;
     }
 
     static dbInsert = async (table:string, record:any) => {

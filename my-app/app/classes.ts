@@ -10,7 +10,6 @@ export enum Operator {
     StartsWith,
     EndsWith,
     Contains
-
 }
 
 export enum SortDirection {
@@ -29,30 +28,39 @@ export interface ICondition {
     value: string|number|boolean;
 }
 
-export interface IItemQuery {
+export interface IQuery {
     sortby: string;
     sortdir: string;
     search: string;
-    category_id: string;
     page: number;
+    pageSize: number;
 }
 
-export interface IItem {
+export interface IQueryResult<Q,T> {
+    query: Q;
+    count: number;
+    total: number;
+    result: T[]    
+}
+
+export interface IItemQuery extends IQuery {
+    category_id: string;
+}
+
+export interface IEntity {
     id: string;
+}
+
+export interface IItem extends IEntity {
     name: string;
     category_id: string;
 }
 
-export interface ICategoryQuery {
-    sortby: string;
-    sortdir: string;
-    search: string;
+export interface ICategoryQuery extends IQuery {
     category_id: string;
-    page: number;
 }
 
-export interface ICategory {
-    id: string;
+export interface ICategory extends IEntity {
     name: string;
     category_id: string;
 }

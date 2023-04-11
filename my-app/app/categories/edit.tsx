@@ -31,20 +31,20 @@ export function EditCategory({data = {id: '', name: ''}, mode = 'create', allowD
         router.push('/categories');      
     }
 
-    return (!disabled &&
+    return (!disabled && category &&
         <>
             <Form onSubmit={handleSubmit}>
                 <Form.Group as={Row} className="mb-3">
                     <Form.Label column sm="2" className="text-end">ID</Form.Label>
                     <Col sm="10">
-                        <Form.Control type="text" id="id" placeholder="id" value={category.id} onChange={handleForm} />
+                        <Form.Control type="text" id="id" placeholder="id" value={category.id || ''} onChange={handleForm} />
                         <Form.Text className="text-muted">Category Identifier</Form.Text>     
                     </Col>                       
                 </Form.Group>
                 <Form.Group as={Row} className="mb-3">
                     <Form.Label column sm="2" className="text-end">Name</Form.Label>
                     <Col sm="10">
-                        <Form.Control type="text" id="name" placeholder="name" value={category.name} onChange={handleForm} />
+                        <Form.Control type="text" id="name" placeholder="name" value={category.name || ''} onChange={handleForm} />
                         <Form.Text className="text-muted">Category Name</Form.Text>
                     </Col>
                 </Form.Group>

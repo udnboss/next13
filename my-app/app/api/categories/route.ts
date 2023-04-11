@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { ICondition, ICategory, ICategoryQuery, ISort, Operator, SortDirection } from "../../classes";
+import { ICondition, ICategory, ICategoryQuery, ISort, Operator, SortDirection, IQueryResult } from "../../classes";
 import { ServerUtil } from "../util";
 
 const tableName = 'categories';
@@ -20,8 +20,9 @@ export async function GET(req: NextRequest) {
             sort = [{column: params.sortby, direction: params.sortdir == 'asc' ? SortDirection.Asc : SortDirection.Desc} as ISort];
     }
 
+    const result = await ServerUtil.dbSelect(tableName, where, sort) as IQueryResult<ICategoryQuery, ICategory>;
     return NextResponse.json(
-        await ServerUtil.dbSelect(tableName, where, sort) as ICategory[]
+        result
     )
 }
 

@@ -38,6 +38,10 @@
         {
             "id": "4",
             "name": "Household"
+        },
+        {
+            "id": "5",
+            "name": "Five Cat"
         }
     ]
 }

@@ -1,15 +1,16 @@
 'use client';
 
-import { createAsyncThunk, createSlice, configureStore } from '@reduxjs/toolkit'
-import { ICategory, ICategoryQuery } from '../app/classes';
+import { createAsyncThunk, createSlice, configureStore, AnyAction } from '@reduxjs/toolkit'
+import { ICategory, ICategoryQuery, IQuery, IQueryResult } from '../app/classes';
 import { ClientUtil } from '../util';
 
 export const getCategories = createAsyncThunk(
     'categories/getCategories',
     async (query: ICategoryQuery = null, thunkAPI) => {
         const params = query != null ? new URLSearchParams(Object.entries(query)).toString() : '';
-        const response = await ClientUtil.get(`/api/categories?${params}`) as unknown as ICategory[];
-        return response;
+        const result = await ClientUtil.get(`/api/categories?${params}`) as IQueryResult<ICategoryQuery, ICategory>;
+        result.query = query;
+        return result;
     }
 )
 
@@ -21,13 +22,14 @@ export const deleteCategory = createAsyncThunk(
     }
 )
 
-export const searchCategories = createAsyncThunk(
-    'categories/searchCategories',
-    async (params: string = '', thunkAPI) => {
-        const response = await ClientUtil.get(`/api/categories?${params}`) as unknown as ICategory[];
-        return response;
-    }
-)
+// export const searchCategories = createAsyncThunk(
+//     'categories/searchCategories',
+//     async (query: ICategoryQuery, thunkAPI) => {
+//         const params = query != null ? new URLSearchParams(Object.entries(query)).toString() : '';
+//         const response = await ClientUtil.get(`/api/categories?${params}`) as unknown as ICategory[];
+//         return response;
+//     }
+// )
 
 export const getCategory = createAsyncThunk(
     'categories/getCategory',
@@ -59,6 +61,8 @@ export type categoriesStateType = {
     selectedCategory: ICategory;
     query: ICategoryQuery;
     loading: string;
+    count: number;
+    total: number;
 };
 
 const categoriesSlice = createSlice({
@@ -68,23 +72,42 @@ const categoriesSlice = createSlice({
         selectedIndex: 0,
         selectedCategory: null as ICategory,
         query: null as ICategoryQuery,
-        loading: 'idle'
+        loading: 'idle',
+        count: 0,
+        total: 0
     } as categoriesStateType,
     reducers: {
 
     },
-    extraReducers: (builder) => {
-        // Add reducers for additional action types here, and handle loading state as needed
+    extraReducers: (builder) => {       
+
         builder.addCase(getCategories.fulfilled, (state, action) => {
-            // update the state array
-            state.categories = action.payload;
+            state.categories = action.payload.result;
+            state.query = action.payload.query;
+            state.count = action.payload.count;
+            state.total = action.payload.total;
+            state.selectedCategory = state.categories[state.selectedIndex];
         })
 
         builder.addCase(getCategory.fulfilled, (state, action) => {
-            // update the state
             state.selectedIndex = state.categories.findIndex(x => x.id == action.payload.id);
-            state.selectedCategory = state.categories[state.selectedIndex];
+            state.categories[state.selectedIndex] = action.payload;
+            state.selectedCategory = action.payload;
         })
+
+        builder.addCase(getCategory.rejected, (state, action) => {
+            state.selectedIndex = -1;
+            state.selectedCategory = null;
+        })
+
+        //handle loading state (the order matters)
+        builder.addMatcher((action: AnyAction) => { return (action.type as string).endsWith('pending');}, (state, action) => {
+            state.loading = 'pending';
+        });
+
+        builder.addMatcher((action: AnyAction) => { return !(action.type as string).endsWith('pending');}, (state, action) => {
+            state.loading = 'idle';
+        });
     },
 })
 

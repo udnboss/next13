@@ -1,14 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
-import { ICondition, Operator } from "../../../classes";
+import { ICategory, ICategoryQuery, ICondition, IQueryResult, Operator } from "../../../classes";
 import { ServerUtil } from "../../util";
 
 const tableName = 'categories';
 
 export async function GET(req: NextRequest, { params }) {
     const where = [{column: 'id', operator: Operator.Equals, value: params.id} as ICondition];
-    const categories = await ServerUtil.dbSelect(tableName, where);
-    if (categories.length) {
-        return NextResponse.json(categories[0]);
+    const result = await ServerUtil.dbSelect(tableName, where) as IQueryResult<ICategoryQuery, ICategory>;
+    if (result.count) {
+        return NextResponse.json(result.result[0]);
     }
 
     return NextResponse.json({}, { status: 404});
