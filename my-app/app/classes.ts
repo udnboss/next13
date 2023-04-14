@@ -64,3 +64,12 @@ export interface ICategory extends IEntity {
     name: string;
     category_id: string;
 }
+
+export interface ICustomerQuery extends IQuery {
+
+}
+
+export interface ICustomer extends IEntity {
+    name: string;
+    address: string;
+}

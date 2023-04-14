@@ -2,7 +2,9 @@
 const nextConfig = {
   reactStrictMode: true,
   experimental:{
-    appDir: true
+    appDir: true,
+    // concurrentFeatures: true,
+    // serverComponents: true,
   },
   headers: async () => {
     return [

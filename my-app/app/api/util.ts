@@ -85,7 +85,7 @@ export class ServerUtil {
             });    
         }
 
-        return {result: results, count: results.length, query: null, total: results.length} as IQueryResult<IQuery, any>;
+        return {result: results, count: results.length, total: results.length} as IQueryResult<IQuery, any>;
     }
 
     static dbInsert = async (table:string, record:any) => {

@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { ICategory } from "../../classes";
-import { notFound } from 'next/navigation';
 
 import { useRouter } from 'next/navigation';
 import { EditCategory } from "../edit";
@@ -26,11 +25,11 @@ export default function CategoryPage({params}){
         setCategory(selectedCategory);
         if(selectedCategory === null) {
             // router.push('/404');
-            notFound();
+            //notFound();
         }
 
         // console.log(selectedCategory);
-    }, [selectedCategory]) // eslint-disable-line react-hooks/exhaustive-deps
+    }, [selectedCategory, loading]) // eslint-disable-line react-hooks/exhaustive-deps
 
     const handleSubmit = async (category:ICategory) => {
         dispatch(updateCategory(category) as unknown as AnyAction);

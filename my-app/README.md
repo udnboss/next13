@@ -12,3 +12,9 @@ npm run dev
 
 Open [http://localhost:8001](http://localhost:8001) with your browser to see the result.
 
+
+About the app routes:
+
+the app/items uses ContextAPI (Client Side Rendering)
+the app/categories uses React Redux (Client Side Rendering)
+the pages/customers uses Server Side Rendering for the customers index page

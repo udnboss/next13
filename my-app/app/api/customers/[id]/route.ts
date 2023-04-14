@@ -1,14 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
-import { ICondition, Operator } from "../../../classes";
+import { ICustomer, ICustomerQuery, ICondition, IQueryResult, Operator } from "../../../classes";
 import { ServerUtil } from "../../util";
 
-const tableName = 'items';
+const tableName = 'customers';
 
 export async function GET(req: NextRequest, { params }) {
     const where = [{column: 'id', operator: Operator.Equals, value: params.id} as ICondition];
-    const items = await ServerUtil.dbSelect(tableName, where);
-    if (items.count) {
-        return NextResponse.json(items.result[0]);
+    const result = await ServerUtil.dbSelect(tableName, where) as IQueryResult<ICustomerQuery, ICustomer>;
+    if (result.count) {
+        return NextResponse.json(result.result[0]);
     }
 
     return NextResponse.json({}, { status: 404});
@@ -17,5 +17,5 @@ export async function GET(req: NextRequest, { params }) {
 export async function DELETE(req: NextRequest, { params }) {        
     return NextResponse.json(
         await ServerUtil.dbDelete(tableName, params.id)
-    )
+    );
 }

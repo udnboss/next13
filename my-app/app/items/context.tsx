@@ -2,7 +2,7 @@
 
 import { createContext, ReactNode, useContext, useEffect, useState } from "react";
 import { ClientUtil } from "../../util";
-import { IItem, IItemQuery } from "../classes";
+import { IItem, IItemQuery, IQueryResult } from "../classes";
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 type itemsContextType = {
@@ -41,13 +41,13 @@ export function ItemsProvider({children}: Props) {
     const router = useRouter();
     const pathname = usePathname();
 
-    const [query, setQuery] = useState<IItemQuery>(null);
-    const [items, setItems] = useState<IItem[]>();
+    const [query, setQuery] = useState<IItemQuery>({} as IItemQuery);
+    const [items, setItems] = useState<IItem[]>([] as IItem[]);
     const [pending, setPending] = useState<boolean>(false);
 
     useEffect( () => {
         console.log('searchParams changed');
-        setQuery(Object.fromEntries(searchParams.entries()) as unknown as IItemQuery);
+        setQuery(Object.fromEntries(searchParams?.entries() || []) as unknown as IItemQuery);
     }, [searchParams])
 
     useEffect( () => {
@@ -55,7 +55,7 @@ export function ItemsProvider({children}: Props) {
             await getItems();
         };
         fetchData();
-    }, [query])
+    }, [query]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const searchItems = async (search:string) => {
         const params = new URLSearchParams(searchParams as unknown as URLSearchParams);
@@ -67,10 +67,10 @@ export function ItemsProvider({children}: Props) {
 
         const params = query != null ? new URLSearchParams(Object.entries(query)).toString() : '';
         setPending(true);
-        const data = await ClientUtil.get(`/api/items?${params}`) as unknown as IItem[]; 
-        setItems(data);
+        const data = await ClientUtil.get(`/api/items?${params}`) as unknown as IQueryResult<IItemQuery, IItem>; 
+        setItems(data.result);
         setPending(false);
-        return data;
+        return data.result;
     };
 
     const getItem = async (id:string) => {

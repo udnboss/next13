@@ -2,12 +2,12 @@
     "items": [
         {
             "id": "2",
-            "name": "Two tone town",
+            "name": "Two tone town..",
             "category_id": null
         },
         {
             "id": "3",
-            "name": "Three js",
+            "name": "Three D",
             "category_id": null
         },
         {
@@ -42,6 +42,28 @@
         {
             "id": "5",
             "name": "Five Cat"
+        }
+    ],
+    "customers": [
+        {
+            "id": "1",
+            "name": "Ali"
+        },
+        {
+            "id": "2",
+            "name": "Murtaja"
+        },
+        {
+            "id": "3",
+            "name": "Muneer"
+        },
+        {
+            "id": "4",
+            "name": "Ahmed"
+        },
+        {
+            "id": "5",
+            "name": "Huda"
         }
     ]
 }
