@@ -2,33 +2,33 @@
 
 import { useState } from "react";
 import { Button, Col, Form, Row } from "react-bootstrap";
-import { IItem } from "../classes";
+import { ISale } from "../classes";
 
 import { useRouter } from 'next/navigation';
 
-export function EditItem({data = {id: '', name: ''}, mode = 'create', allowDelete = false, disabled = false, onDelete = (item) => {}, onSubmit}) {
+export function EditSale({data = {id: ''}, mode = 'create', allowDelete = false, disabled = false, onDelete = (sale) => {}, onSubmit}) {
     const router = useRouter();
-    const [item, setItem] = useState<IItem>(data as IItem);
+    const [sale, setSale] = useState<ISale>(data as ISale);
 
     const handleForm = (e: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
-        setItem({
-            ...item,
+        setSale({
+            ...sale,
             [e.currentTarget.id]: e.currentTarget.value,
         });
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        onSubmit(item);        
+        onSubmit(sale);        
     }
 
     const handleCancel = async (e: React.FormEvent) => {
-        router.push('/items');      
+        router.push('/sales');      
     }
 
     const handleDelete = async (e: React.FormEvent) => {
-        onDelete(item);
-        router.push('/items');      
+        onDelete(sale);
+        router.push('/sales');      
     }
 
     return (
@@ -37,15 +37,15 @@ export function EditItem({data = {id: '', name: ''}, mode = 'create', allowDelet
                 <Form.Group as={Row} className="mb-3">
                     <Form.Label column sm="2" className="text-end">ID</Form.Label>
                     <Col sm="10">
-                        <Form.Control type="text" id="id" placeholder="id" value={item.id} onChange={handleForm} />
-                        <Form.Text className="text-muted">Item Identifier</Form.Text>     
+                        <Form.Control type="text" id="id" placeholder="id" value={sale.id} onChange={handleForm} />
+                        <Form.Text className="text-muted">Sale Identifier</Form.Text>     
                     </Col>                       
                 </Form.Group>
                 <Form.Group as={Row} className="mb-3">
                     <Form.Label column sm="2" className="text-end">Name</Form.Label>
                     <Col sm="10">
-                        <Form.Control type="text" id="name" placeholder="name" value={item.name} onChange={handleForm} />
-                        <Form.Text className="text-muted">Item Name</Form.Text>
+                        <Form.Control type="text" id="name" placeholder="name" value={sale.number} onChange={handleForm} />
+                        <Form.Text className="text-muted">Sale Number</Form.Text>
                     </Col>
                 </Form.Group>
                 <Row>

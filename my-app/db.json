@@ -15,8 +15,12 @@
             "name": "Fourth Item in this list..."
         },
         {
-            "id": "5",
-            "name": "6666666677777"
+            "id": "1",
+            "name": "One Mans Dream"
+        },
+        {
+            "id": "6",
+            "name": "8554646"
         }
     ],
     "categories": [
@@ -64,6 +68,55 @@
         {
             "id": "5",
             "name": "Huda"
+        }
+    ],
+    "sales":[
+        {
+            "id": "1",
+            "number": "1",
+            "date": "2023-02-15",
+            "customer_id": "1",
+            "reference": "January 2023"
+        },
+        {
+            "id": "2",
+            "number": "2",
+            "date": "2023-03-15",
+            "customer_id": "2",
+            "reference": "February 2023"
+        },
+        {
+            "id": "3",
+            "number": "3",
+            "date": "2023-04-15",
+            "customer_id": "1",
+            "reference": "March 2023"
+        }
+    ],
+    "saleitems":[
+        {
+            "id": "1",
+            "sale_id": "1",
+            "item_id": "1",
+            "price": 3452.21,
+            "quantity": 1,
+            "description": "from a to b"            
+        },
+        {
+            "id": "2",
+            "sale_id": "2",
+            "item_id": "2",
+            "price": 1025.33,
+            "quantity": 1,
+            "description": "from b to c"            
+        },
+        {
+            "id": "3",
+            "sale_id": "3",
+            "item_id": "3",
+            "price": 4531.67,
+            "quantity": 1,
+            "description": "from c to d"            
         }
     ]
 }

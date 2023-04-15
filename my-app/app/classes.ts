@@ -73,3 +73,32 @@ export interface ICustomer extends IEntity {
     name: string;
     address: string;
 }
+
+export interface ISaleQuery extends IQuery {
+    customer_id: string;
+    number: number;
+    date_from: string;
+    date_to: string;
+    reference: string; 
+}
+
+export interface ISale extends IEntity {    
+    account_id: string;
+    customer_id: string;
+    number: number;
+    date: string;
+    reference: string;    
+    confirmed: boolean;
+}
+
+export interface ISaleItemQuery extends IQuery {
+    sale_id: string;
+}
+
+export interface ISaleItem extends IEntity {
+    sale_id: string;
+    item_id: string;
+    description: string;
+    quantity: number;
+    price: number;    
+}

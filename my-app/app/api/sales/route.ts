@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { ICondition, IItem, IItemQuery, IQueryResult, ISort, Operator, SortDirection } from "../../classes";
+import { ICondition, IQueryResult, ISale, ISaleQuery, ISort, Operator, SortDirection } from "../../classes";
 import { ServerUtil } from "../util";
 
-const tableName = 'items';
+const tableName = 'sales';
 
 export async function GET(req: NextRequest) {
-    const params = Object.fromEntries(req.nextUrl.searchParams) as unknown as IItemQuery;
+    const params = Object.fromEntries(req.nextUrl.searchParams) as unknown as ISaleQuery;
 
     var where:ICondition[] = [];
     var sort:ISort[] = [];
@@ -14,30 +14,30 @@ export async function GET(req: NextRequest) {
     if (params) {
         if(params.search?.length > 0)
             where.push({column: 'name', operator: Operator.Contains, value: params.search} as ICondition);
-        if(params.category_id?.length > 0)
-            where.push({column: 'category_id', operator: Operator.Equals, value: params.category_id} as ICondition);
+        if(params.customer_id?.length > 0)
+            where.push({column: 'customer_id', operator: Operator.Equals, value: params.customer_id} as ICondition);
         if(params.sortby)
             sort = [{column: params.sortby, direction: params.sortdir == 'asc' ? SortDirection.Asc : SortDirection.Desc} as ISort];
     }
 
     return NextResponse.json(
-        await ServerUtil.dbSelect(tableName, where, sort) as IQueryResult<IItemQuery, IItem>
+        await ServerUtil.dbSelect(tableName, where, sort) as IQueryResult<ISaleQuery, ISale>
     )
 }
 
 export async function POST(req: NextRequest) {
-    const newItem = await req.json() as IItem;
+    const newSale = await req.json() as ISale;
 
     return NextResponse.json(
-        await ServerUtil.dbInsert(tableName, newItem)
+        await ServerUtil.dbInsert(tableName, newSale)
     )
 }
 
 export async function PUT(req: NextRequest) {
-    const item = await req.json() as IItem;
+    const sale = await req.json() as ISale;
 
     return NextResponse.json(
-        await ServerUtil.dbUpdate(tableName, item)
+        await ServerUtil.dbUpdate(tableName, sale)
     )
 }
 
