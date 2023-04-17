@@ -70,12 +70,14 @@
             "name": "Huda"
         }
     ],
-    "sales":[
+    "sales": [
         {
             "id": "1",
             "number": "1",
             "date": "2023-02-15",
             "customer_id": "1",
+            "company_id": "1",
+            "account_id": "1",
             "reference": "January 2023"
         },
         {
@@ -83,6 +85,8 @@
             "number": "2",
             "date": "2023-03-15",
             "customer_id": "2",
+            "company_id": "1",
+            "account_id": "1",
             "reference": "February 2023"
         },
         {
@@ -90,17 +94,19 @@
             "number": "3",
             "date": "2023-04-15",
             "customer_id": "1",
+            "company_id": "1",
+            "account_id": "1",
             "reference": "March 2023"
         }
     ],
-    "saleitems":[
+    "saleitems": [
         {
             "id": "1",
             "sale_id": "1",
             "item_id": "1",
             "price": 3452.21,
             "quantity": 1,
-            "description": "from a to b"            
+            "description": "from a to b"
         },
         {
             "id": "2",
@@ -108,7 +114,7 @@
             "item_id": "2",
             "price": 1025.33,
             "quantity": 1,
-            "description": "from b to c"            
+            "description": "from b to c"
         },
         {
             "id": "3",
@@ -116,7 +122,40 @@
             "item_id": "3",
             "price": 4531.67,
             "quantity": 1,
-            "description": "from c to d"            
+            "description": "from c to d"
+        },
+        {
+            "id": "4",
+            "sale_id": "1",
+            "quantity": 1,
+            "price": "123",
+            "item_id": "2",
+            "description": "another item desc.."
+        }
+    ],
+    "companies": [
+        {
+            "id": "1",
+            "name": "Bright Horizon Digital Marketing",
+            "address": "2277",
+            "crn": "123456789123",
+            "trn": "987654321987654",
+            "contact": "Ali",
+            "mobile": "1234567890",
+            "email": "test@email.com"
+        }
+    ],
+    "accounts": [
+        {
+            "id": "1",
+            "name": "Bright Horizon Digital Marketing",
+            "label": "NCB",
+            "bank_name": "National Commercial Bank",
+            "bank_address": "Some Address",
+            "bank_swift": "SWIFTCODE",
+            "account_name": "Bright Horizon Digital Marketing",
+            "account_iban": "SA1234567894561324865798",
+            "account_address": "2277"
         }
     ]
 }

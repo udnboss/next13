@@ -8,8 +8,8 @@ const tableName = 'categories';
 export async function GET(req: NextRequest) {
     const params = Object.fromEntries(req.nextUrl.searchParams) as unknown as ICategoryQuery;
 
-    var where = [];
-    var sort = [];
+    var where:ICondition[] = [];
+    var sort:ISort[] = [];
 
     if (params) {
         if(params.search?.length > 0)

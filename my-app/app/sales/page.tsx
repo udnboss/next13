@@ -58,7 +58,19 @@ export default function SalesPage() {
                             <th><Link href={{
                                     pathname: '/sales',
                                     query: { sortby: 'number', search:search, sortdir: context.query?.sortdir == 'desc' ? 'asc' : 'desc' },
-                                }}>Name</Link>
+                                }}>Number</Link>
+                            </th>
+                            <th><Link href={{
+                                    pathname: '/sales',
+                                    query: { sortby: 'date', search:search, sortdir: context.query?.sortdir == 'desc' ? 'asc' : 'desc' },
+                                }}>Date</Link>
+                            </th>
+                            <th><Link href={{
+                                    pathname: '/sales',
+                                    query: { sortby: 'customer_id', search:search, sortdir: context.query?.sortdir == 'desc' ? 'asc' : 'desc' },
+                                }}>Customer</Link>
+                            </th>
+                            <th>Total
                             </th>
                             <th></th>
                         </tr>
@@ -68,12 +80,18 @@ export default function SalesPage() {
                             sale &&
                             <tr key={sale.id}>
                                 <td className="align-middle">
-                                    <Link href={`/sales/${sale.id}`} className="text-decoration-none">{sale.number}</Link>    
+                                    {sale.number}
+                                </td>
+                                <td className="align-middle">
+                                    <Link href={`/sales/${sale.id}`} className="text-decoration-none">{sale.date}</Link>
+                                </td>
+                                <td className="align-middle">
+                                    {sale.customer?.name}  
                                 </td>
                                 <td className="text-end">
-                                    <Button variant="danger" disabled={context.pending} onClick={(e:FormEvent<HTMLButtonElement>) => handleDelete(sale)}>
+                                    {/* <Button variant="danger" disabled={context.pending} onClick={(e:FormEvent<HTMLButtonElement>) => handleDelete(sale)}>
                                         <i className="bi-trash"></i> Delete
-                                    </Button>
+                                    </Button> */}
                                 </td>
                             </tr>
                             

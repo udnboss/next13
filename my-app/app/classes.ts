@@ -25,7 +25,7 @@ export interface ISort {
 export interface ICondition {
     column: string;
     operator: Operator;
-    value: string|number|boolean;
+    value: string|number|boolean|string[]|number[];
 }
 
 export interface IQuery {
@@ -53,7 +53,8 @@ export interface IEntity {
 
 export interface IItem extends IEntity {
     name: string;
-    category_id: string;
+    category_id: string | null;
+    category?:ICategory | null;
 }
 
 export interface ICategoryQuery extends IQuery {
@@ -62,7 +63,8 @@ export interface ICategoryQuery extends IQuery {
 
 export interface ICategory extends IEntity {
     name: string;
-    category_id: string;
+    category_id: string | null;
+    items?: IItem[];
 }
 
 export interface ICustomerQuery extends IQuery {
@@ -72,6 +74,9 @@ export interface ICustomerQuery extends IQuery {
 export interface ICustomer extends IEntity {
     name: string;
     address: string;
+    contact: string;
+    currency: string;
+    sales?: ISale[];
 }
 
 export interface ISaleQuery extends IQuery {
@@ -83,12 +88,19 @@ export interface ISaleQuery extends IQuery {
 }
 
 export interface ISale extends IEntity {    
-    account_id: string;
-    customer_id: string;
+    company_id: string | null;
+    account_id: string | null;
+    customer_id: string | null;
+    place: string;
     number: number;
     date: string;
-    reference: string;    
+    reference: string | null;    
     confirmed: boolean;
+    customer?: ICustomer | null;
+    account?: IAccount | null;
+    company?: ICompany | null;
+    total: number;
+    items?: ISaleItem[];
 }
 
 export interface ISaleItemQuery extends IQuery {
@@ -96,9 +108,32 @@ export interface ISaleItemQuery extends IQuery {
 }
 
 export interface ISaleItem extends IEntity {
-    sale_id: string;
-    item_id: string;
+    sale_id: string | null;
+    item_id: string | null;
     description: string;
     quantity: number;
     price: number;    
+    sale?: ISale | null;
+    item?: IItem | null;
+}
+
+export interface ICompany extends IEntity {
+    name: string;
+    address: string;
+    crn: string;
+    trn: string;
+    contact: string;
+    mobile: string;
+    email: string;
+
+}
+
+export interface IAccount extends IEntity {
+    label: string;
+    bank_name: string;
+    bank_address: string;
+    bank_swift: string;
+    account_name: string;
+    account_iban: string;
+    account_address: string;
 }

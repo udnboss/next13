@@ -2,15 +2,16 @@
 
 import { useState } from "react";
 import { Button, Col, Form, Row } from "react-bootstrap";
-import { ISale } from "../classes";
+import { ICustomer, ISale } from "../classes";
 
 import { useRouter } from 'next/navigation';
 
-export function EditSale({data = {id: ''}, mode = 'create', allowDelete = false, disabled = false, onDelete = (sale) => {}, onSubmit}) {
+
+export function EditSale({data = {id: ''}, mode = 'create', customers = [], allowDelete = false, disabled = false, onCancel = () => {}, onDelete = (sale) => {}, onSubmit}) {
     const router = useRouter();
     const [sale, setSale] = useState<ISale>(data as ISale);
 
-    const handleForm = (e: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
+    const handleForm = (e: React.FormEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>): void => {
         setSale({
             ...sale,
             [e.currentTarget.id]: e.currentTarget.value,
@@ -23,7 +24,9 @@ export function EditSale({data = {id: ''}, mode = 'create', allowDelete = false,
     }
 
     const handleCancel = async (e: React.FormEvent) => {
-        router.push('/sales');      
+        if(onCancel) onCancel();
+        if(mode == 'create')
+            router.push('/sales');      
     }
 
     const handleDelete = async (e: React.FormEvent) => {
@@ -42,10 +45,36 @@ export function EditSale({data = {id: ''}, mode = 'create', allowDelete = false,
                     </Col>                       
                 </Form.Group>
                 <Form.Group as={Row} className="mb-3">
-                    <Form.Label column sm="2" className="text-end">Name</Form.Label>
+                    <Form.Label column sm="2" className="text-end">Number</Form.Label>
                     <Col sm="10">
-                        <Form.Control type="text" id="name" placeholder="name" value={sale.number} onChange={handleForm} />
-                        <Form.Text className="text-muted">Sale Number</Form.Text>
+                        <Form.Control type="text" id="number" placeholder="number" value={sale.number} onChange={handleForm} />
+                        <Form.Text className="text-muted">Invoice Number</Form.Text>
+                    </Col>
+                </Form.Group>
+                <Form.Group as={Row} className="mb-3">
+                    <Form.Label column sm="2" className="text-end">Date</Form.Label>
+                    <Col sm="10">
+                        <Form.Control type="date" id="date" placeholder="date" value={sale.date} onChange={handleForm} />
+                        <Form.Text className="text-muted">Issue Date</Form.Text>
+                    </Col>
+                </Form.Group>
+                <Form.Group as={Row} className="mb-3">
+                    <Form.Label column sm="2" className="text-end">Reference</Form.Label>
+                    <Col sm="10">
+                        <Form.Control type="text" id="reference" placeholder="reference" value={sale.reference as string} onChange={handleForm} />
+                        <Form.Text className="text-muted">Sale Reference</Form.Text>
+                    </Col>
+                </Form.Group>
+                <Form.Group as={Row} className="mb-3">
+                    <Form.Label column sm="2" className="text-end">Customer</Form.Label>
+                    <Col sm="10">
+                        <Form.Select id="customer_id" value={sale.customer_id as string} onChange={handleForm}>
+                            <option>-</option>
+                            {customers?.map((customer: ICustomer) => (
+                                <option key={customer.id} value={customer.id}>{customer.name}</option>    
+                            ))}
+                        </Form.Select>
+                        <Form.Text className="text-muted">Sale Customer</Form.Text>
                     </Col>
                 </Form.Group>
                 <Row>

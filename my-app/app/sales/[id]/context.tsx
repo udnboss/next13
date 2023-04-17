@@ -4,11 +4,14 @@ import { createContext, ReactNode, useContext, useReducer, useEffect, useState }
 import { ClientUtil } from "../../../util";
 import { ISaleItem, ISaleItemQuery, IQueryResult } from "../../classes";
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { randomUUID } from "crypto";
 
 type saleItemsContextType = {
+    sale_id:string,
     saleItems: ISaleItem[];    
     pending: boolean;
     getSaleItems: (sale_id:string) => Promise<ISaleItem[]>;
+    createSaleItem: (sale_id:string) => Promise<ISaleItem>;
     insertSaleItem: (saleItem: ISaleItem) => Promise<ISaleItem>;
     deleteSaleItem: (saleItem: ISaleItem) => Promise<boolean>;
     updateSaleItem: (saleItem: ISaleItem) => Promise<ISaleItem>;
@@ -30,7 +33,7 @@ export const useSaleItemsContext = () => {
 };
 
 
-function saleItemsReducer(saleItems, action) {
+function saleItemsReducer(saleItems: ISaleItem[], action): ISaleItem[] {
     console.log(`dispatched: ${action.type}`);
     console.log(saleItems);
     switch (action.type) {
@@ -82,9 +85,15 @@ export function SaleItemsProvider({ children, sale_id }: { children: ReactNode, 
         return data.result;
     };
 
+    const createSaleItem = async (sale_id:string) => {
+        const saleItem = await ClientUtil.get(`/api/saleitems/new`) as unknown as ISaleItem;
+        saleItem.sale_id = sale_id;
+        return saleItem;
+    }
+
     const insertSaleItem = async (saleItem: ISaleItem) => {
         setPending(true);
-        const result = await ClientUtil.post('/api/saleItems', saleItem) as unknown as ISaleItem;
+        const result = await ClientUtil.post('/api/saleitems', saleItem) as unknown as ISaleItem;
         setPending(false);
         dispatch({type: 'added', data: result});
         return result;
@@ -92,7 +101,7 @@ export function SaleItemsProvider({ children, sale_id }: { children: ReactNode, 
 
     const deleteSaleItem = async (saleItem: ISaleItem) => {
         setPending(true);
-        const result = await ClientUtil.delete(`/api/saleItems/${saleItem.id}`) as unknown as boolean;
+        const result = await ClientUtil.delete(`/api/saleitems/${saleItem.id}`) as unknown as boolean;
         setPending(false);
         dispatch({type: 'deleted', data: saleItem.id});
         return result;
@@ -100,13 +109,13 @@ export function SaleItemsProvider({ children, sale_id }: { children: ReactNode, 
 
     const updateSaleItem = async (saleItem: ISaleItem) => {
         setPending(true);
-        const result = await ClientUtil.put(`/api/saleItems`, saleItem) as unknown as ISaleItem;
+        const result = await ClientUtil.put(`/api/saleitems`, saleItem) as unknown as ISaleItem;
         setPending(false);
         dispatch({type: 'changed', data: result});
         return result;
     }
 
-    const value = { saleItems, pending, getSaleItems, deleteSaleItem, insertSaleItem, updateSaleItem };
+    const value = { sale_id, saleItems, pending, getSaleItems, createSaleItem, insertSaleItem, deleteSaleItem, updateSaleItem };
 
     return (
         <SaleItemsContext.Provider value={value}>

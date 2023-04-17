@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { ICondition, IItem, IItemQuery, IQueryResult, ISort, Operator, SortDirection } from "../../classes";
+import { ICategory, ICondition, IItem, IItemQuery, IQuery, IQueryResult, ISort, Operator, SortDirection } from "../../classes";
 import { ServerUtil } from "../util";
 
 const tableName = 'items';
@@ -20,9 +20,17 @@ export async function GET(req: NextRequest) {
             sort = [{column: params.sortby, direction: params.sortdir == 'asc' ? SortDirection.Asc : SortDirection.Desc} as ISort];
     }
 
-    return NextResponse.json(
-        await ServerUtil.dbSelect(tableName, where, sort) as IQueryResult<IItemQuery, IItem>
-    )
+    const items = await ServerUtil.dbSelect(tableName, where, sort) as IQueryResult<IItemQuery, IItem>;
+
+    const category_ids = items.result.map(x => x.category_id).filter((v,i,a) => a.indexOf(v) === i);
+    const categories = await ServerUtil.dbSelect('categories', [{column: 'id', operator: Operator.IsIn, value: category_ids} as ICondition], sort) as IQueryResult<IQuery, ICategory>;
+    const categoriesLookup = Object.fromEntries(categories.result.map(x => [x.id, x]));
+
+    for(const item of items.result) {
+        item.category = item.category_id != null ? categoriesLookup[item.category_id] : null;
+    }
+
+    return NextResponse.json(items)
 }
 
 export async function POST(req: NextRequest) {

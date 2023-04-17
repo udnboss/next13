@@ -2,13 +2,14 @@
 
 import { createContext, ReactNode, useContext, useReducer, useEffect, useState } from "react";
 import { ClientUtil } from "../../util";
-import { ISale, ISaleQuery, IQueryResult } from "../classes";
+import { ISale, ISaleQuery, IQueryResult, ICustomer, ICustomerQuery } from "../classes";
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 type salesContextType = {
     sales: ISale[];
     query: ISaleQuery;
     pending: boolean;
+    customers: ICustomer[];
     searchSales: (search: string) => Promise<void>;
     getSales: () => Promise<ISale[]>;
     getSale: (id: string) => Promise<ISale>;
@@ -32,10 +33,21 @@ export const useSalesContext = () => {
     return context;
 };
 
+function customersReducer(customers, action) {
+    switch (action.type) {
+        case 'refreshed': {
+            return [...action.data];
+        }
+
+        default: {
+            throw Error('Unknown action: ' + action.type);
+        }
+    }
+}
 
 function salesReducer(sales, action) {
-    console.log(`dispatched: ${action.type}`);
-    console.log(sales);
+    // console.log(`dispatched: ${action.type}`);
+    // console.log(sales);
     switch (action.type) {
         case 'refreshed': {
             return [...action.data];
@@ -68,12 +80,25 @@ export function SalesProvider({ children }: { children: ReactNode }) {
         []
     );
 
+    const [customers, dispatchCustomers] = useReducer(
+        customersReducer,
+        []
+    );
+
     const searchParams = useSearchParams();
     const router = useRouter();
     const pathname = usePathname();
 
     const [query, setQuery] = useState<ISaleQuery>({} as ISaleQuery);
     const [pending, setPending] = useState<boolean>(false);
+
+    useEffect(() => {
+        const getCustomers = async () => {
+            const data = await ClientUtil.get(`/api/customers`) as unknown as IQueryResult<ICustomerQuery, ICustomer>;
+            dispatchCustomers({type: 'refreshed', data: data.result});
+        }
+        getCustomers();
+    }, [])
 
     useEffect(() => {
         console.log('searchParams changed');
@@ -138,7 +163,7 @@ export function SalesProvider({ children }: { children: ReactNode }) {
         return result;
     }
 
-    const value = { sales, query, pending, searchSales, getSales, deleteSale, insertSale, updateSale, getSale };
+    const value = { sales, customers, query, pending, searchSales, getSales, deleteSale, insertSale, updateSale, getSale };
 
     return (
         <SalesContext.Provider value={value}>

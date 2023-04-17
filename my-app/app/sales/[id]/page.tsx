@@ -8,6 +8,8 @@ import { EditSale } from "../edit";
 import { useSalesContext } from "../context";
 import SaleItemsPage from "./saleitems";
 import { SaleItemsProvider } from "./context";
+import ViewSale from "./view";
+import { Button, Col, Row } from "react-bootstrap";
 
 
 
@@ -15,6 +17,7 @@ export default function SalePage({params}){
     const router = useRouter();
     const context = useSalesContext();
     const [sale, setSale] = useState<ISale>();
+    const [edit, setEdit] = useState<boolean>(false);
 
     useEffect(() => {
         async function fetchData(id:string) {
@@ -34,11 +37,37 @@ export default function SalePage({params}){
         if(deleted) {
             await context.getSales();
         }
+    } 
+
+    const handleCancel = async () => {
+        setEdit(false);
+    }
+
+    const handleEdit = async () => {
+        setEdit(true);
+    }
+
+    const handlePrint = async () => {
+        router.push(`/sales/print/${params.id}`);
     }
 
     return ( sale &&
         <>
-            <EditSale data={sale} disabled={false} onSubmit={handleSubmit} mode="update" allowDelete={true} onDelete={handleDelete}></EditSale>
+            {!edit && 
+            <Row>
+                <Col>
+                    <ViewSale sale={sale}></ViewSale>
+                </Col>
+                <Col className="text-end">
+                    <Button variant="secondary" onClick={handleEdit}><i className="bi-pencil"></i> Edit</Button>
+                    <Button variant="secondary ms-2" onClick={handlePrint}><i className="bi-printer"></i> Print</Button>
+                </Col>                
+            </Row>
+            }
+            {edit &&
+                <EditSale data={sale} customers={context.customers as never[]} disabled={false} mode="update" 
+                    onSubmit={handleSubmit} onCancel={handleCancel} allowDelete={true} onDelete={handleDelete}></EditSale>
+            }
             <SaleItemsProvider sale_id={params.id}>
                 <SaleItemsPage></SaleItemsPage>
             </SaleItemsProvider>            
