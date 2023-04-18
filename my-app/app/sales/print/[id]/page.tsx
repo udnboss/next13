@@ -1,15 +1,18 @@
 'use client';
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ISale } from "../../../classes";
 import { useSalesContext } from "../../context";
 import { Button } from "react-bootstrap";
 import { useRouter } from "next/navigation";
+import { jsPDF } from 'jspdf';
 
 export default function PrintSale({params}) {
     const router = useRouter();
     const context = useSalesContext();
     const [sale, setSale] = useState<ISale>();
+
+    const pdfRef = useRef(null);
 
     useEffect(() => {
         async function fetchData(id:string) {
@@ -18,10 +21,33 @@ export default function PrintSale({params}) {
 
         fetchData(params.id);
     }, [params.id]); // eslint-disable-line react-hooks/exhaustive-deps
+
+    const handleDownload = () => {
+        const content = pdfRef.current as unknown as string;
+
+        const doc = new jsPDF({
+            orientation: 'p',
+            unit: 'mm',
+            format: 'a4',
+            putOnlyUsedFonts:true
+           });
+        doc.html(content, {
+            callback: function (doc) {
+                doc.save('sample.pdf');
+            },
+            x: 10,
+            y: 10,
+            html2canvas: { letterRendering:true }, // change the scale to whatever number you need
+            width: 315, // <- here
+            windowWidth: 1000 // <- here
+        });
+    };    
+
     return ( sale &&
         <>
         <Button variant="secondary" onClick={() => router.push(`/sales/${sale.id}`)}>Back</Button>
-        <div id="invoice">
+        <Button variant="primary" className="ms-2" onClick={handleDownload}>Download</Button>
+        <div ref={pdfRef} id="invoice">
             {/* <img src="logo_bw.png" style="display: block; position: absolute; top:20px; left:285px; " width="80px" />
             <img src="stamp.png" style="display: block; position: absolute; top:150px; left:500px; transform: rotate(3deg)" width="120px" />
             <img src="signature.png" style="display: block; position: absolute; top:200px; left:530px;" width="120px" /> */}
