@@ -46,7 +46,7 @@ function saleItemsReducer(saleItems: ISaleItem[], action): ISaleItem[] {
         case 'changed': {
             return saleItems.map(t => {
                 if (t.id === action.data.id) {
-                    return action.saleItem;
+                    return action.data;
                 } else {
                     return t;
                 }

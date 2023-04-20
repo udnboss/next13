@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { IAccount, ICompany, ICondition, ICustomer, IItem, IQuery, IQueryResult, ISale, ISaleItem, Operator } from "../../../classes";
+import { IAccount, ICompany, ICondition, ICurrency, ICustomer, IItem, IQuery, IQueryResult, ISale, ISaleItem, Operator } from "../../../classes";
 import { ServerUtil } from "../../util";
 
 const tableName = 'sales';
@@ -10,6 +10,12 @@ export async function GET(req: NextRequest, { params }) {
 
     if (sales.count) {
         const sale:ISale = sales.result[0];
+
+        if (sale.currency_id) {
+            const currencyResults = await ServerUtil.dbSelect('currencies', [{column:'id', operator: Operator.Equals, value: sale.currency_id} as ICondition]) as IQueryResult<IQuery, ICurrency>;
+            if(currencyResults.count)
+                sale.currency = currencyResults.result[0];
+        }
         
         if (sale.company_id) {
             const companyResults = await ServerUtil.dbSelect('companies', [{column:'id', operator: Operator.Equals, value: sale.company_id} as ICondition]) as IQueryResult<IQuery, ICompany>;

@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: true,
+  reactStrictMode: false, //helps in dev they say
   experimental:{
     appDir: true,
     // concurrentFeatures: true,

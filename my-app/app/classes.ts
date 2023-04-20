@@ -75,7 +75,8 @@ export interface ICustomer extends IEntity {
     name: string;
     address: string;
     contact: string;
-    currency: string;
+    currency_id: string;
+    currency?: ICurrency | null;
     sales?: ISale[];
 }
 
@@ -87,6 +88,11 @@ export interface ISaleQuery extends IQuery {
     reference: string; 
 }
 
+export interface ICurrency extends IEntity {
+    name: string;
+    symbol: string;
+}
+
 export interface ISale extends IEntity {    
     company_id: string | null;
     account_id: string | null;
@@ -94,12 +100,15 @@ export interface ISale extends IEntity {
     place: string;
     number: number;
     date: string;
+    currency_id: string;
+    total: number;
     reference: string | null;    
     confirmed: boolean;
+    currency?: ICurrency | null;
     customer?: ICustomer | null;
     account?: IAccount | null;
     company?: ICompany | null;
-    total: number;
+    
     items?: ISaleItem[];
 }
 

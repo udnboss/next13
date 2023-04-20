@@ -16,6 +16,7 @@ type salesContextType = {
     insertSale: (sale: ISale) => Promise<ISale>;
     deleteSale: (sale: ISale) => Promise<boolean>;
     updateSale: (sale: ISale) => Promise<ISale>;
+    refreshSale: (id:string) => Promise<ISale>;
 };
 
 export const SalesContext = createContext<salesContextType>({} as salesContextType);
@@ -56,9 +57,9 @@ function salesReducer(sales, action) {
             return [...sales, action.data];
         }
         case 'changed': {
-            return sales.map(t => {
+            return sales.map((t:ISale) => {
                 if (t.id === action.data.id) {
-                    return action.sale;
+                    return action.data;
                 } else {
                     return t;
                 }
@@ -136,6 +137,14 @@ export function SalesProvider({ children }: { children: ReactNode }) {
         return result;
     }
 
+    const refreshSale = async (id: string) => {
+        setPending(true);
+        const result = await ClientUtil.get(`/api/sales/${id}`) as unknown as ISale;
+        setPending(false);
+        dispatch({type: 'changed', data: result});
+        return result;
+    }
+
     const insertSale = async (sale: ISale) => {
         setPending(true);
         const result = await ClientUtil.post('/api/sales', sale) as unknown as ISale;
@@ -163,7 +172,7 @@ export function SalesProvider({ children }: { children: ReactNode }) {
         return result;
     }
 
-    const value = { sales, customers, query, pending, searchSales, getSales, deleteSale, insertSale, updateSale, getSale };
+    const value = { sales, customers, query, pending, searchSales, getSales, deleteSale, insertSale, updateSale, getSale, refreshSale };
 
     return (
         <SalesContext.Provider value={value}>

@@ -51,23 +51,28 @@
     "customers": [
         {
             "id": "1",
-            "name": "Ali"
+            "name": "Ali",
+            "currency_id": "1"
         },
         {
             "id": "2",
-            "name": "Murtaja"
+            "name": "Murtaja",
+            "currency_id": "2"
         },
         {
             "id": "3",
-            "name": "Muneer"
+            "name": "Muneer",
+            "currency_id": "3"
         },
         {
             "id": "4",
-            "name": "Ahmed"
+            "name": "Ahmed",
+            "currency_id": "1"
         },
         {
             "id": "5",
-            "name": "Huda"
+            "name": "Huda",
+            "currency_id": "2"
         }
     ],
     "sales": [
@@ -75,6 +80,8 @@
             "id": "1",
             "number": "1",
             "date": "2023-02-15",
+            "total": 11204.21,
+            "currency_id": "1",
             "customer_id": "1",
             "company_id": "1",
             "account_id": "1",
@@ -84,6 +91,8 @@
             "id": "2",
             "number": "2",
             "date": "2023-03-15",
+            "total": 0,
+            "currency_id": "2",
             "customer_id": "2",
             "company_id": "1",
             "account_id": "1",
@@ -93,6 +102,8 @@
             "id": "3",
             "number": "3",
             "date": "2023-04-15",
+            "total": 0,
+            "currency_id": "3",
             "customer_id": "1",
             "company_id": "1",
             "account_id": "1",
@@ -103,10 +114,14 @@
         {
             "id": "1",
             "sale_id": "1",
-            "item_id": "1",
+            "item_id": "3",
             "price": 3452.21,
             "quantity": 1,
-            "description": "from a to b"
+            "description": "from a to b",
+            "item": {
+                "id": "1",
+                "name": "One Mans Dream"
+            }
         },
         {
             "id": "2",
@@ -128,9 +143,21 @@
             "id": "4",
             "sale_id": "1",
             "quantity": 1,
-            "price": "123",
+            "price": "900",
             "item_id": "2",
             "description": "another item desc.."
+        },
+        {
+            "id": "552c17d1-5195-4f63-9e73-688c2acfd398",
+            "sale_id": "1",
+            "item_id": "4",
+            "price": "6852",
+            "quantity": 1,
+            "description": "",
+            "item": {
+                "id": "4",
+                "name": "Fourth Item in this list..."
+            }
         }
     ],
     "companies": [
@@ -156,6 +183,23 @@
             "account_name": "Bright Horizon Digital Marketing",
             "account_iban": "SA1234567894561324865798",
             "account_address": "2277"
+        }
+    ],
+    "currencies": [
+        {
+            "id": "1",
+            "name": "USD",
+            "symbol": "&dollar;"
+        },
+        {
+            "id": "2",
+            "name": "EUR",
+            "symbol": "&euro;"
+        },
+        {
+            "id": "3",
+            "name": "GBP",
+            "symbol": "&pound;"
         }
     ]
 }

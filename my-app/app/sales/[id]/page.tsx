@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 import { EditSale } from "../edit";
 import { useSalesContext } from "../context";
 import SaleItemsPage from "./saleitems";
-import { SaleItemsProvider } from "./context";
+import { SaleItemsProvider, useSaleItemsContext } from "./context";
 import ViewSale from "./view";
 import { Button, Col, Row } from "react-bootstrap";
 
@@ -16,6 +16,7 @@ import { Button, Col, Row } from "react-bootstrap";
 export default function SalePage({params}){
     const router = useRouter();
     const context = useSalesContext();
+
     const [sale, setSale] = useState<ISale>();
     const [edit, setEdit] = useState<boolean>(false);
 
@@ -25,7 +26,7 @@ export default function SalePage({params}){
         }
 
         fetchData(params.id);
-    }, [params.id]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [params.id, context.sales]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const handleSubmit = async (sale:ISale) => {
         const updated = await context.updateSale(sale);
@@ -51,6 +52,12 @@ export default function SalePage({params}){
         router.push(`/sales/print/${params.id}`);
     }
 
+    const handleChange = async () => {
+        // console.log('received a change from child')
+        await context.refreshSale(params.id);
+        // setSale(await context.getSale(params.id));
+    }
+
     return ( sale &&
         <>
             {!edit && 
@@ -69,7 +76,7 @@ export default function SalePage({params}){
                     onSubmit={handleSubmit} onCancel={handleCancel} allowDelete={true} onDelete={handleDelete}></EditSale>
             }
             <SaleItemsProvider sale_id={params.id}>
-                <SaleItemsPage></SaleItemsPage>
+                <SaleItemsPage sale={sale} onChange={handleChange}></SaleItemsPage>
             </SaleItemsProvider>            
         </>
         
