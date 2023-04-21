@@ -113,7 +113,7 @@ export default function SaleItemsPage({sale, onChange = () => {}}: {sale:ISale, 
                     <tfoot>
                         <tr>
                             <td colSpan={3}></td>
-                            <td>{sale.currency?.name} {sale.total.toLocaleString(undefined, {maximumFractionDigits:2})}</td>
+                            <td>{sale.currency?.name} {sale.total?.toLocaleString(undefined, {maximumFractionDigits:2})}</td>
                             <td></td>
                         </tr>
                     </tfoot>

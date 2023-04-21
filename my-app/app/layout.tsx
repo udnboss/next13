@@ -14,13 +14,18 @@ export default function RootLayout({ children }) {
                 <script async src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossOrigin="anonymous"></script>
             </head>
             <body>
-                <div className="container-fluid">
-                    <div className="row flex-nowrap">
-                        <div className="col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-dark">
+                <div className="container-fluid overflow-hidden">
+                    <div className="row vh-100 overflow-auto">
+                        <div className="col-12 col-sm-4 col-md-3 col-xl-2 px-sm-2 px-0 bg-dark d-flex sticky-top">
                             <SideBar></SideBar>
                         </div>
-                        <div className="col py-3">
-                            {children}
+                        <div className="col d-flex flex-column h-sm-100" style={{minHeight: 'calc(100% - 62px)'}}>
+                            <main className="overflow-auto pt-3 px-3">
+                                {children}
+                            </main>
+                            <footer className="bg-light py-4 mt-auto">
+                                Footer content here...
+                            </footer>
                         </div>
                     </div>
                 </div>

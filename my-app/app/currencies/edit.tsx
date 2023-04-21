@@ -2,34 +2,33 @@
 
 import { useState } from "react";
 import { Button, Col, Form, Row } from "react-bootstrap";
-import { ICategory } from "../classes";
+import { ICurrency } from "../classes";
 
 import { useRouter } from 'next/navigation';
 
-export function EditCategory({data = {id: '', name: ''}, mode = 'create', allowDelete = false, disabled = false, onDelete = (category) => {}, onSubmit}) {
+export function EditCurrency({data = {id: '', name: ''}, mode = 'create', allowDelete = false, disabled = false, onDelete = (currency) => {}, onSubmit}) {
     const router = useRouter();
-    const [category, setCategory] = useState<ICategory>(data as ICategory);
+    const [currency, setCurrency] = useState<ICurrency>(data as ICurrency);
 
     const handleForm = (e: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
-        setCategory({
-            ...category,
+        setCurrency({
+            ...currency,
             [e.currentTarget.id]: e.currentTarget.value,
         });
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        onSubmit(category);        
+        onSubmit(currency);        
     }
 
     const handleCancel = async (e: React.FormEvent) => {
-        router.push('/categories');      
+        router.push('/currencies');      
     }
 
     const handleDelete = async (e: React.FormEvent) => {
-        if(onDelete) 
-            onDelete(category);
-        router.push('/categories');      
+        onDelete(currency);
+        router.push('/currencies');      
     }
 
     return (
@@ -38,15 +37,15 @@ export function EditCategory({data = {id: '', name: ''}, mode = 'create', allowD
                 <Form.Group as={Row} className="mb-3">
                     <Form.Label column sm="2" className="text-end">ID</Form.Label>
                     <Col sm="10">
-                        <Form.Control type="text" id="id" placeholder="id" value={category.id || ''} onChange={handleForm} />
-                        <Form.Text className="text-muted">Category Identifier</Form.Text>     
+                        <Form.Control type="text" id="id" placeholder="id" value={currency.id} onChange={handleForm} />
+                        <Form.Text className="text-muted">Currency Identifier</Form.Text>     
                     </Col>                       
                 </Form.Group>
                 <Form.Group as={Row} className="mb-3">
                     <Form.Label column sm="2" className="text-end">Name</Form.Label>
                     <Col sm="10">
-                        <Form.Control type="text" id="name" placeholder="name" value={category.name || ''} onChange={handleForm} />
-                        <Form.Text className="text-muted">Category Name</Form.Text>
+                        <Form.Control type="text" id="name" placeholder="name" value={currency.name} onChange={handleForm} />
+                        <Form.Text className="text-muted">Currency Name</Form.Text>
                     </Col>
                 </Form.Group>
                 <Row>

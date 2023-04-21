@@ -2,34 +2,33 @@
 
 import { useState } from "react";
 import { Button, Col, Form, Row } from "react-bootstrap";
-import { ICategory } from "../classes";
+import { IAccount } from "../classes";
 
 import { useRouter } from 'next/navigation';
 
-export function EditCategory({data = {id: '', name: ''}, mode = 'create', allowDelete = false, disabled = false, onDelete = (category) => {}, onSubmit}) {
+export function EditAccount({data = {id: '', label: ''}, mode = 'create', allowDelete = false, disabled = false, onDelete = (account) => {}, onSubmit}) {
     const router = useRouter();
-    const [category, setCategory] = useState<ICategory>(data as ICategory);
+    const [account, setAccount] = useState<IAccount>(data as IAccount);
 
     const handleForm = (e: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
-        setCategory({
-            ...category,
+        setAccount({
+            ...account,
             [e.currentTarget.id]: e.currentTarget.value,
         });
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        onSubmit(category);        
+        onSubmit(account);        
     }
 
     const handleCancel = async (e: React.FormEvent) => {
-        router.push('/categories');      
+        router.push('/accounts');      
     }
 
     const handleDelete = async (e: React.FormEvent) => {
-        if(onDelete) 
-            onDelete(category);
-        router.push('/categories');      
+        onDelete(account);
+        router.push('/accounts');      
     }
 
     return (
@@ -38,15 +37,15 @@ export function EditCategory({data = {id: '', name: ''}, mode = 'create', allowD
                 <Form.Group as={Row} className="mb-3">
                     <Form.Label column sm="2" className="text-end">ID</Form.Label>
                     <Col sm="10">
-                        <Form.Control type="text" id="id" placeholder="id" value={category.id || ''} onChange={handleForm} />
-                        <Form.Text className="text-muted">Category Identifier</Form.Text>     
+                        <Form.Control type="text" id="id" placeholder="id" value={account.id} onChange={handleForm} />
+                        <Form.Text className="text-muted">Account Identifier</Form.Text>     
                     </Col>                       
                 </Form.Group>
                 <Form.Group as={Row} className="mb-3">
                     <Form.Label column sm="2" className="text-end">Name</Form.Label>
                     <Col sm="10">
-                        <Form.Control type="text" id="name" placeholder="name" value={category.name || ''} onChange={handleForm} />
-                        <Form.Text className="text-muted">Category Name</Form.Text>
+                        <Form.Control type="text" id="label" placeholder="label" value={account.label} onChange={handleForm} />
+                        <Form.Text className="text-muted">Account Name</Form.Text>
                     </Col>
                 </Form.Group>
                 <Row>

@@ -5,17 +5,24 @@ import { ICustomer } from "../../../app/classes";
 
 // import { useRouter } from 'next/navigation';
 import { useRouter } from 'next/router'
-import { EditCustomer } from "../edit";
+import EditCustomer from "../edit";
 
 import { ClientUtil } from "../../../util";
 import CustomersLayout from "../layout";
+
+function getCleanCopy(data:ICustomer) {
+    const cleanData = {...data};
+    delete data.currency;
+    delete data.sales;
+    return cleanData;
+}
 
 async function getCustomer(id:string) {
     return await ClientUtil.get(`/api/customers/${id}`) as unknown as ICustomer;
 }
 
 async function updateCustomer(customer:ICustomer) {
-    return await ClientUtil.put(`/api/customers`, customer) as unknown as ICustomer;
+    return await ClientUtil.put(`/api/customers`, getCleanCopy(customer)) as unknown as ICustomer;
 }
 
 async function deleteCustomer(id:string) {

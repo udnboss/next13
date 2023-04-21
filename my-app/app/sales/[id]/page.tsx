@@ -29,15 +29,14 @@ export default function SalePage({params}){
     }, [params.id, context.sales]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const handleSubmit = async (sale:ISale) => {
-        const updated = await context.updateSale(sale);
-        router.push('/sales');
+        const updated = await context.updateSale(sale);  
+        setEdit(false);      
+        // router.push(`/sales/${sale.id}`);
     }
 
     const handleDelete = async (sale:ISale) => {
-        const deleted = await context.deleteSale(sale);        
-        if(deleted) {
-            await context.getSales();
-        }
+        const deleted = await context.deleteSale(sale);     
+        router.push(`/sales`);   
     } 
 
     const handleCancel = async () => {
@@ -72,7 +71,12 @@ export default function SalePage({params}){
             </Row>
             }
             {edit &&
-                <EditSale data={sale} customers={context.customers as never[]} disabled={false} mode="update" 
+                <EditSale data={sale} 
+                    customers={context.customers as never[]} 
+                    currencies={context.currencies as never[]} 
+                    companies={context.companies as never[]} 
+                    accounts={context.accounts as never[]} 
+                    disabled={false} mode="update" 
                     onSubmit={handleSubmit} onCancel={handleCancel} allowDelete={true} onDelete={handleDelete}></EditSale>
             }
             <SaleItemsProvider sale_id={params.id}>

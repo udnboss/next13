@@ -35,7 +35,7 @@ export async function GET(req: NextRequest, { params }) {
                     sale.customer = customerResults.result[0];    
         }
 
-        const saleitemsResults = await ServerUtil.dbSelect('saleitems', [{column: 'id', operator: Operator.Equals, value: sale.id} as ICondition]) as IQueryResult<IQuery, ISaleItem>;
+        const saleitemsResults = await ServerUtil.dbSelect('saleitems', [{column: 'sale_id', operator: Operator.Equals, value: sale.id} as ICondition]) as IQueryResult<IQuery, ISaleItem>;
         const saleItems = saleitemsResults.result;
         const itemIds = saleItems.map(x => x.item_id).filter((v,i,a) => a.indexOf(v) == i);
         const itemsResults = await ServerUtil.dbSelect('items', [{column: 'id', operator: Operator.IsIn, value: itemIds} as ICondition]) as IQueryResult<IQuery, IItem>;

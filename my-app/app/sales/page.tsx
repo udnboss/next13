@@ -55,24 +55,23 @@ export default function SalesPage() {
                 <table className="table">
                     <thead>
                         <tr>
-                            <th><Link href={{
+                            <th style={{width:'60px'}}><Link href={{
                                     pathname: '/sales',
                                     query: { sortby: 'number', search:search, sortdir: context.query?.sortdir == 'desc' ? 'asc' : 'desc' },
-                                }}>Number</Link>
+                                }}>No.</Link>
                             </th>
-                            <th><Link href={{
+                            <th style={{width:'120px'}}><Link href={{
                                     pathname: '/sales',
                                     query: { sortby: 'date', search:search, sortdir: context.query?.sortdir == 'desc' ? 'asc' : 'desc' },
-                                }}>Date</Link>
+                                }}>Issue Date</Link>
                             </th>
                             <th><Link href={{
                                     pathname: '/sales',
                                     query: { sortby: 'customer_id', search:search, sortdir: context.query?.sortdir == 'desc' ? 'asc' : 'desc' },
                                 }}>Customer</Link>
                             </th>
-                            <th>Total
+                            <th style={{width:'60px'}}>Total
                             </th>
-                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -89,9 +88,7 @@ export default function SalesPage() {
                                     {sale.customer?.name}  
                                 </td>
                                 <td className="text-end">
-                                    {/* <Button variant="danger" disabled={context.pending} onClick={(e:FormEvent<HTMLButtonElement>) => handleDelete(sale)}>
-                                        <i className="bi-trash"></i> Delete
-                                    </Button> */}
+                                    {sale.total?.toLocaleString()}
                                 </td>
                             </tr>
                             

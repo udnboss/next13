@@ -4,12 +4,19 @@ import { useState } from "react";
 import { ICustomer } from "../../app/classes";
 
 import { useRouter } from 'next/navigation';
-import { EditCustomer } from "./edit";
+import  EditCustomer from "./edit";
 import { ClientUtil } from "../../util";
 import CustomersLayout from "./layout";
 
+function getCleanCopy(data:ICustomer) {
+    const cleanData = {...data};
+    delete data.currency;
+    delete data.sales;
+    return cleanData;
+}
+
 async function insertCustomer(customer:ICustomer) {
-    return await ClientUtil.post(`/api/customers`, customer) as unknown as ICustomer;
+    return await ClientUtil.post(`/api/customers`, getCleanCopy(customer)) as unknown as ICustomer;
 }
 
 export default function CreateCustomerPage({params}){

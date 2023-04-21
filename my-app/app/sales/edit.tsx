@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 import { Button, Col, Form, Row } from "react-bootstrap";
-import { ICustomer, ISale } from "../classes";
+import { IAccount, ICompany, ICurrency, ICustomer, ISale } from "../classes";
 
 import { useRouter } from 'next/navigation';
 
 
-export function EditSale({data = {id: ''}, mode = 'create', customers = [], allowDelete = false, disabled = false, onCancel = () => {}, onDelete = (sale) => {}, onSubmit}) {
+export function EditSale({data = {id: ''}, mode = 'create', customers = [], currencies = [], companies = [], accounts = [], allowDelete = false, disabled = false, onCancel = () => {}, onDelete = (sale) => {}, onSubmit}) {
     const router = useRouter();
     const [sale, setSale] = useState<ISale>(data as ISale);
 
@@ -17,6 +17,13 @@ export function EditSale({data = {id: ''}, mode = 'create', customers = [], allo
             [e.currentTarget.id]: e.currentTarget.value,
         });
     };
+
+    const handleConfirmed = (e) => {
+        setSale({
+            ...sale,
+            [e.currentTarget.id]: e.currentTarget.checked,
+        });
+    }
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -66,6 +73,13 @@ export function EditSale({data = {id: ''}, mode = 'create', customers = [], allo
                     </Col>
                 </Form.Group>
                 <Form.Group as={Row} className="mb-3">
+                    <Form.Label column sm="2" className="text-end">Place of Supply</Form.Label>
+                    <Col sm="10">
+                        <Form.Control type="text" id="place" placeholder="place" value={sale.place as string} onChange={handleForm} />
+                        <Form.Text className="text-muted">Sale Place of Supply</Form.Text>
+                    </Col>
+                </Form.Group>
+                <Form.Group as={Row} className="mb-3">
                     <Form.Label column sm="2" className="text-end">Customer</Form.Label>
                     <Col sm="10">
                         <Form.Select id="customer_id" value={sale.customer_id as string} onChange={handleForm}>
@@ -75,6 +89,46 @@ export function EditSale({data = {id: ''}, mode = 'create', customers = [], allo
                             ))}
                         </Form.Select>
                         <Form.Text className="text-muted">Sale Customer</Form.Text>
+                    </Col>
+                </Form.Group>
+                <Form.Group as={Row} className="mb-3">
+                    <Form.Label column sm="2" className="text-end">Currency</Form.Label>
+                    <Col sm="10">
+                        <Form.Select id="currency_id" value={sale.currency_id as string} onChange={handleForm}>
+                            {currencies?.map((currency: ICurrency) => (
+                                <option key={currency.id} value={currency.id}>{currency.name}</option>    
+                            ))}
+                        </Form.Select>
+                        <Form.Text className="text-muted">Sale Currency</Form.Text>
+                    </Col>
+                </Form.Group>
+                <Form.Group as={Row} className="mb-3">
+                    <Form.Label column sm="2" className="text-end">Company</Form.Label>
+                    <Col sm="10">
+                        <Form.Select id="company_id" value={sale.company_id as string} onChange={handleForm}>
+                            {companies?.map((company: ICompany) => (
+                                <option key={company.id} value={company.id}>{company.name}</option>    
+                            ))}
+                        </Form.Select>
+                        <Form.Text className="text-muted">Sale Company</Form.Text>
+                    </Col>
+                </Form.Group>
+                <Form.Group as={Row} className="mb-3">
+                    <Form.Label column sm="2" className="text-end">Account</Form.Label>
+                    <Col sm="10">
+                        <Form.Select id="account_id" value={sale.account_id as string} onChange={handleForm}>
+                            {accounts?.map((account: IAccount) => (
+                                <option key={account.id} value={account.id}>{account.label}</option>    
+                            ))}
+                        </Form.Select>
+                        <Form.Text className="text-muted">Sale Account</Form.Text>
+                    </Col>
+                </Form.Group>
+                <Form.Group as={Row} className="mb-3">
+                    <Form.Label column sm="2" className="text-end">Confirmed</Form.Label>
+                    <Col sm="10">
+                        <Form.Check type="switch" label="Confirmed" id="confirmed" checked={sale.confirmed} onChange={handleConfirmed} />
+                        <Form.Text className="text-muted">Confirmed</Form.Text>
                     </Col>
                 </Form.Group>
                 <Row>

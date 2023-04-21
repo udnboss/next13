@@ -2,34 +2,33 @@
 
 import { useState } from "react";
 import { Button, Col, Form, Row } from "react-bootstrap";
-import { ICategory } from "../classes";
+import { ICompany } from "../classes";
 
 import { useRouter } from 'next/navigation';
 
-export function EditCategory({data = {id: '', name: ''}, mode = 'create', allowDelete = false, disabled = false, onDelete = (category) => {}, onSubmit}) {
+export function EditCompany({data = {id: '', name: ''}, mode = 'create', allowDelete = false, disabled = false, onDelete = (company) => {}, onSubmit}) {
     const router = useRouter();
-    const [category, setCategory] = useState<ICategory>(data as ICategory);
+    const [company, setCompany] = useState<ICompany>(data as ICompany);
 
     const handleForm = (e: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
-        setCategory({
-            ...category,
+        setCompany({
+            ...company,
             [e.currentTarget.id]: e.currentTarget.value,
         });
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        onSubmit(category);        
+        onSubmit(company);        
     }
 
     const handleCancel = async (e: React.FormEvent) => {
-        router.push('/categories');      
+        router.push('/companies');      
     }
 
     const handleDelete = async (e: React.FormEvent) => {
-        if(onDelete) 
-            onDelete(category);
-        router.push('/categories');      
+        onDelete(company);
+        router.push('/companies');      
     }
 
     return (
@@ -38,15 +37,15 @@ export function EditCategory({data = {id: '', name: ''}, mode = 'create', allowD
                 <Form.Group as={Row} className="mb-3">
                     <Form.Label column sm="2" className="text-end">ID</Form.Label>
                     <Col sm="10">
-                        <Form.Control type="text" id="id" placeholder="id" value={category.id || ''} onChange={handleForm} />
-                        <Form.Text className="text-muted">Category Identifier</Form.Text>     
+                        <Form.Control type="text" id="id" placeholder="id" value={company.id} onChange={handleForm} />
+                        <Form.Text className="text-muted">Company Identifier</Form.Text>     
                     </Col>                       
                 </Form.Group>
                 <Form.Group as={Row} className="mb-3">
                     <Form.Label column sm="2" className="text-end">Name</Form.Label>
                     <Col sm="10">
-                        <Form.Control type="text" id="name" placeholder="name" value={category.name || ''} onChange={handleForm} />
-                        <Form.Text className="text-muted">Category Name</Form.Text>
+                        <Form.Control type="text" id="name" placeholder="name" value={company.name} onChange={handleForm} />
+                        <Form.Text className="text-muted">Company Name</Form.Text>
                     </Col>
                 </Form.Group>
                 <Row>

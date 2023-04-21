@@ -4,8 +4,8 @@ import { useState } from "react";
 import { Button, Col, Form, Row } from "react-bootstrap";
 import { ICustomer } from "../../app/classes";
 
-export function EditCustomer({data = {id: '', name: '', address: ''}, mode = 'create', 
-    allowDelete = false, onDelete, onCancel, onSubmit}: {data:ICustomer, mode:string, allowDelete:boolean, onDelete?:(customer:ICustomer)=>any, onCancel:()=>any, onSubmit:(customer:ICustomer) => any}) {
+export default function EditCustomer({data = {id: '', name: '', address: ''} as ICustomer, mode = 'create', 
+    allowDelete = false, onDelete = (customer) => {}, onCancel, onSubmit}) {
 
     const [customer, setCustomer] = useState<ICustomer>(data as ICustomer);
 

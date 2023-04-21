@@ -4,10 +4,77 @@ import { ISort, ICondition, Operator, SortDirection, IQueryResult, IQuery } from
 export class ServerUtil {
     static server = 'http://localhost:8001';
 
+    static _cache = null;
+
     static dbConnect = async () => {
+        if(this._cache)
+            return this._cache;
+
         const result = await fs.readFile('db.json', 'utf-8');
         const db = JSON.parse(result);
+        this._cache = db;
         return db;
+    }
+
+    static clearCache = () => {
+        this._cache = null;
+    }
+
+    static dbCount = async (table:string, where:ICondition[] = []) => {
+        const db = await this.dbConnect();
+        return (db[table] as any[]).filter((x, i) => {
+            for(const cond of where) {
+                const value = x[cond.column];
+
+                switch(cond.operator) {
+                    case Operator.Equals:
+                        if(value !== cond.value)
+                            return false;
+                        break;
+                    case Operator.Contains:
+                        if((value as string).indexOf(cond.value as string) === -1)
+                            return false;    
+                        break;
+                    case Operator.StartsWith:
+                        if(!(value as string).startsWith(cond.value as string))
+                            return false;
+                        break;
+                    case Operator.EndsWith:
+                        if(!(value as string).endsWith(cond.value as string))
+                            return false;
+                        break;
+                    case Operator.NotEquals:
+                        if(value === cond.value)
+                            return false;
+                        break;
+                    case Operator.GreaterThan:
+                        if(!(value > cond.value))
+                            return false;
+                        break;
+                    case Operator.LessThan:
+                        if(!(value < cond.value))
+                            return false;
+                        break;
+                    case Operator.IsIn:
+                        if((cond.value as unknown as any[]).indexOf(value) === -1)
+                            return false;
+                        break;
+                    case Operator.IsNotIn:
+                        if((cond.value as unknown as any[]).indexOf(value) !== -1)
+                            return false;
+                        break;
+                    case Operator.IsNull:
+                        if(value !== null)
+                            return false;
+                        break;
+                    case Operator.IsNotNull:
+                        if(value === null)
+                            return false;
+                        break;
+                }                     
+            }
+            return true;
+        }).length;
     }
 
     static dbSelect = async (table:string, where:ICondition[] = [], sort:ISort[] = []) => {
@@ -119,6 +186,7 @@ export class ServerUtil {
 
     static dbCommit = async (db) => {
         await fs.writeFile('db.json', JSON.stringify(db, null, 4));
+        this.clearCache();
     }
 
 }

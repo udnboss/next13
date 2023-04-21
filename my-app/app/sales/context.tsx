@@ -2,7 +2,7 @@
 
 import { createContext, ReactNode, useContext, useReducer, useEffect, useState } from "react";
 import { ClientUtil } from "../../util";
-import { ISale, ISaleQuery, IQueryResult, ICustomer, ICustomerQuery } from "../classes";
+import { ISale, ISaleQuery, IQueryResult, ICustomer, ICustomerQuery, ICurrency, IQuery, IAccount, ICompany } from "../classes";
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 type salesContextType = {
@@ -10,6 +10,9 @@ type salesContextType = {
     query: ISaleQuery;
     pending: boolean;
     customers: ICustomer[];
+    currencies: ICurrency[];
+    accounts: IAccount[];
+    companies: ICompany[];
     searchSales: (search: string) => Promise<void>;
     getSales: () => Promise<ISale[]>;
     getSale: (id: string) => Promise<ISale>;
@@ -17,6 +20,7 @@ type salesContextType = {
     deleteSale: (sale: ISale) => Promise<boolean>;
     updateSale: (sale: ISale) => Promise<ISale>;
     refreshSale: (id:string) => Promise<ISale>;
+    createSale: () => Promise<ISale>;
 };
 
 export const SalesContext = createContext<salesContextType>({} as salesContextType);
@@ -35,6 +39,42 @@ export const useSalesContext = () => {
 };
 
 function customersReducer(customers, action) {
+    switch (action.type) {
+        case 'refreshed': {
+            return [...action.data];
+        }
+
+        default: {
+            throw Error('Unknown action: ' + action.type);
+        }
+    }
+}
+
+function currenciesReducer(currencies, action) {
+    switch (action.type) {
+        case 'refreshed': {
+            return [...action.data];
+        }
+
+        default: {
+            throw Error('Unknown action: ' + action.type);
+        }
+    }
+}
+
+function companiesReducer(companies, action) {
+    switch (action.type) {
+        case 'refreshed': {
+            return [...action.data];
+        }
+
+        default: {
+            throw Error('Unknown action: ' + action.type);
+        }
+    }
+}
+
+function accountsReducer(accounts, action) {
     switch (action.type) {
         case 'refreshed': {
             return [...action.data];
@@ -76,15 +116,11 @@ function salesReducer(sales, action) {
 }
 
 export function SalesProvider({ children }: { children: ReactNode }) {
-    const [sales, dispatch] = useReducer(
-        salesReducer,
-        []
-    );
-
-    const [customers, dispatchCustomers] = useReducer(
-        customersReducer,
-        []
-    );
+    const [sales, dispatch] = useReducer(salesReducer,[]);
+    const [customers, dispatchCustomers] = useReducer(customersReducer,[]);    
+    const [currencies, dispatchCurrencies] = useReducer( currenciesReducer, []);
+    const [companies, dispatchCompanies] = useReducer( companiesReducer, []);
+    const [accounts, dispatchAccounts] = useReducer( accountsReducer, []);
 
     const searchParams = useSearchParams();
     const router = useRouter();
@@ -94,11 +130,26 @@ export function SalesProvider({ children }: { children: ReactNode }) {
     const [pending, setPending] = useState<boolean>(false);
 
     useEffect(() => {
-        const getCustomers = async () => {
-            const data = await ClientUtil.get(`/api/customers`) as unknown as IQueryResult<ICustomerQuery, ICustomer>;
-            dispatchCustomers({type: 'refreshed', data: data.result});
+        const getLookups = async () => {
+            ClientUtil.get(`/api/customers`)
+                .then((data:IQueryResult<ICustomerQuery, ICustomer>) => {
+                    dispatchCustomers({type: 'refreshed', data: data.result});    
+                });
+            ClientUtil.get(`/api/currencies`)
+                .then( (data: IQueryResult<IQuery, ICurrency>) => {
+                    dispatchCurrencies({type: 'refreshed', data: data.result});
+                }); 
+            ClientUtil.get(`/api/companies`)
+                .then( (data: IQueryResult<IQuery, ICompany>) => {
+                    dispatchCompanies({type: 'refreshed', data: data.result});
+                });
+            ClientUtil.get(`/api/accounts`)
+                .then( (data: IQueryResult<IQuery, IAccount>) => {
+                    dispatchAccounts({type: 'refreshed', data: data.result});
+                });
+            
         }
-        getCustomers();
+        getLookups();
     }, [])
 
     useEffect(() => {
@@ -145,9 +196,25 @@ export function SalesProvider({ children }: { children: ReactNode }) {
         return result;
     }
 
+    const getCleanCopy = (sale:ISale) => {
+        const cleanData = {...sale};
+        delete cleanData.account;
+        delete cleanData.company;
+        delete cleanData.currency;
+        delete cleanData.customer;
+        delete cleanData.items;
+        return cleanData;
+    }
+
+    const createSale = async () => {
+        const sale = await ClientUtil.get(`/api/sales/new`) as unknown as ISale;
+        return sale;
+    }
+
     const insertSale = async (sale: ISale) => {
         setPending(true);
-        const result = await ClientUtil.post('/api/sales', sale) as unknown as ISale;
+
+        const result = await ClientUtil.post('/api/sales', getCleanCopy(sale)) as unknown as ISale;
         setPending(false);
         dispatch({type: 'added', data: result});
         // await getSales();
@@ -165,14 +232,14 @@ export function SalesProvider({ children }: { children: ReactNode }) {
 
     const updateSale = async (sale: ISale) => {
         setPending(true);
-        const result = await ClientUtil.put(`/api/sales`, sale) as unknown as ISale;
+        const result = await ClientUtil.put(`/api/sales`, getCleanCopy(sale)) as unknown as ISale;
         setPending(false);
         dispatch({type: 'changed', data: result});
         // await getSales();
         return result;
     }
 
-    const value = { sales, customers, query, pending, searchSales, getSales, deleteSale, insertSale, updateSale, getSale, refreshSale };
+    const value = { sales, customers, currencies, companies, accounts, query, pending, searchSales, getSales, deleteSale, createSale, insertSale, updateSale, getSale, refreshSale };
 
     return (
         <SalesContext.Provider value={value}>

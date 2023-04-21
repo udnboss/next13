@@ -96,6 +96,7 @@ export default function PrintSale({params}) {
             <table id="invoice_services" style={{width:"100%", border: '1', borderCollapse:"collapse", marginBottom:'50px'}}>
                 <thead>
                     <tr>
+                        <th>#</th>
                         <th>Description</th>
                         <th style={{width:'40px'}}>Quantity</th>
                         <th style={{width:'50px'}}>Price</th>
@@ -103,19 +104,20 @@ export default function PrintSale({params}) {
                     </tr>
                 </thead>
                 <tbody>
-                    {sale.items?.map( saleitem => (
+                    {sale.items?.map( (saleitem, ix) => (
                         <tr key={saleitem.id}>
+                            <td>{ix+1}</td>
                             <td>{ saleitem.item?.name } - { saleitem.description }</td>
-                            <td>{ saleitem.quantity }</td>
-                            <td>{ saleitem.price }</td>
-                            <td className="text-end">{ sale.customer?.currency } { Number(saleitem.quantity * saleitem.price).toLocaleString() }</td>
+                            <td className="text-end" >{ saleitem.quantity }</td>
+                            <td className="text-end" dangerouslySetInnerHTML={{__html: sale.currency?.symbol + saleitem.price.toLocaleString()}}></td>
+                            <td className="text-end" dangerouslySetInnerHTML={{__html: sale.currency?.symbol + Number(saleitem.quantity * saleitem.price).toLocaleString()}}></td>
                         </tr>    
                     ))}                    
                 </tbody>
                 <tfoot >
                     <tr style={{borderTop:'solid 2px black'}}>
-                        <td colSpan={3} >Total</td>
-                        <td className="text-end text-bold">{ sale.customer?.currency } { Number(sale.total).toLocaleString() }</td>
+                        <td className="text-end" colSpan={4} >Total including VAT</td>
+                        <td className="text-end text-bold" dangerouslySetInnerHTML={{__html: sale.currency?.symbol + Number(sale.total).toLocaleString()}}></td>
                     </tr>
                 </tfoot>
             </table>

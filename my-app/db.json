@@ -3,24 +3,34 @@
         {
             "id": "2",
             "name": "Two tone town..",
-            "category_id": null
+            "category_id": null,
+            "category": null
         },
         {
             "id": "3",
             "name": "Three D",
-            "category_id": null
+            "category_id": null,
+            "category": null
         },
         {
             "id": "4",
-            "name": "Fourth Item in this list..."
+            "name": "Fourth Item in this list...",
+            "category": null
         },
         {
             "id": "1",
-            "name": "One Mans Dream"
+            "name": "One Mans Dream",
+            "category": null
         },
         {
             "id": "6",
-            "name": "8554646"
+            "name": "8554646",
+            "category": null
+        },
+        {
+            "id": "7",
+            "name": "Seven",
+            "category": null
         }
     ],
     "categories": [
@@ -80,12 +90,18 @@
             "id": "1",
             "number": "1",
             "date": "2023-02-15",
-            "total": 11204.21,
+            "total": 1836.5,
             "currency_id": "1",
             "customer_id": "1",
             "company_id": "1",
             "account_id": "1",
-            "reference": "January 2023"
+            "reference": "January 2023",
+            "confirmed": false,
+            "customer": {
+                "id": "1",
+                "name": "Ali",
+                "currency_id": "1"
+            }
         },
         {
             "id": "2",
@@ -96,18 +112,60 @@
             "customer_id": "2",
             "company_id": "1",
             "account_id": "1",
-            "reference": "February 2023"
+            "reference": "February 2023",
+            "confirmed": false,
+            "customer": {
+                "id": "2",
+                "name": "Murtaja",
+                "currency_id": "2"
+            }
         },
         {
             "id": "3",
             "number": "3",
             "date": "2023-04-15",
-            "total": 0,
+            "total": 8943,
             "currency_id": "3",
             "customer_id": "1",
             "company_id": "1",
             "account_id": "1",
-            "reference": "March 2023"
+            "reference": "March 2023",
+            "confirmed": false,
+            "customer": {
+                "id": "1",
+                "name": "Ali",
+                "currency_id": "1"
+            }
+        },
+        {
+            "id": "4",
+            "number": "4",
+            "date": "2023-04-20",
+            "reference": "April 2023",
+            "customer_id": "4",
+            "company_id": "1",
+            "account_id": "1",
+            "currency_id": "3",
+            "confirmed": false,
+            "total": 1,
+            "customer": {
+                "id": "4",
+                "name": "Ahmed",
+                "currency_id": "1"
+            }
+        },
+        {
+            "id": "40ae556f-e057-44ba-9867-60f324eb7230",
+            "company_id": "",
+            "place": "",
+            "currency_id": "2",
+            "account_id": "",
+            "customer_id": "5",
+            "date": "2023-04-21",
+            "confirmed": false,
+            "number": 5,
+            "total": 53,
+            "reference": ""
         }
     ],
     "saleitems": [
@@ -115,12 +173,13 @@
             "id": "1",
             "sale_id": "1",
             "item_id": "3",
-            "price": 3452.21,
+            "price": "550.5",
             "quantity": 1,
             "description": "from a to b",
             "item": {
-                "id": "1",
-                "name": "One Mans Dream"
+                "id": "3",
+                "name": "Three D",
+                "category_id": null
             }
         },
         {
@@ -135,29 +194,67 @@
             "id": "3",
             "sale_id": "3",
             "item_id": "3",
-            "price": 4531.67,
+            "price": "8943",
             "quantity": 1,
-            "description": "from c to d"
+            "description": "from c to d",
+            "item": {
+                "id": "3",
+                "name": "Three D",
+                "category_id": null
+            }
         },
         {
             "id": "4",
             "sale_id": "1",
             "quantity": 1,
-            "price": "900",
+            "price": "563",
             "item_id": "2",
-            "description": "another item desc.."
+            "description": "another item desc..",
+            "item": {
+                "id": "2",
+                "name": "Two tone town..",
+                "category_id": null
+            }
         },
         {
             "id": "552c17d1-5195-4f63-9e73-688c2acfd398",
             "sale_id": "1",
             "item_id": "4",
-            "price": "6852",
+            "price": "300",
             "quantity": 1,
             "description": "",
             "item": {
                 "id": "4",
                 "name": "Fourth Item in this list..."
             }
+        },
+        {
+            "id": "757c4863-0927-4751-94c3-6bbae9024808",
+            "sale_id": "1",
+            "item_id": "1",
+            "price": "423",
+            "quantity": 1,
+            "description": "of the shore bordering another world"
+        },
+        {
+            "id": "e63715c9-29a2-46f1-91ff-f3553b0141a7",
+            "sale_id": "4",
+            "item_id": "1",
+            "price": "1",
+            "quantity": 1,
+            "description": "",
+            "item": {
+                "id": "1",
+                "name": "One Mans Dream"
+            }
+        },
+        {
+            "id": "c48694f9-5fd5-4bc7-a778-a6d2b1732a1d",
+            "sale_id": "40ae556f-e057-44ba-9867-60f324eb7230",
+            "item_id": "",
+            "price": "53",
+            "quantity": 1,
+            "description": ""
         }
     ],
     "companies": [

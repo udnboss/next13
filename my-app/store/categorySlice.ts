@@ -6,8 +6,8 @@ import { ClientUtil } from '../util';
 
 export const getCategories = createAsyncThunk(
     'categories/getCategories',
-    async (query: ICategoryQuery = null, thunkAPI) => {
-        const params = query != null ? new URLSearchParams(Object.entries(query)).toString() : '';
+    async (query: ICategoryQuery = {} as ICategoryQuery, thunkAPI) => {
+        const params = new URLSearchParams(Object.entries(query)).toString();
         const result = await ClientUtil.get(`/api/categories?${params}`) as IQueryResult<ICategoryQuery, ICategory>;
         result.query = query;
         return result;
@@ -70,8 +70,8 @@ const categoriesSlice = createSlice({
     initialState: {
         categories: [] as ICategory[],
         selectedIndex: 0,
-        selectedCategory: null as ICategory,
-        query: null as ICategoryQuery,
+        selectedCategory: null as unknown as ICategory,
+        query: {} as ICategoryQuery,
         loading: 'idle',
         count: 0,
         total: 0
@@ -97,7 +97,7 @@ const categoriesSlice = createSlice({
 
         builder.addCase(getCategory.rejected, (state, action) => {
             state.selectedIndex = -1;
-            state.selectedCategory = null;
+            state.selectedCategory = null as unknown as ICategory;
         })
 
         //handle loading state (the order matters)

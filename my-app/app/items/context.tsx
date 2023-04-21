@@ -112,9 +112,15 @@ export function ItemsProvider({ children }: { children: ReactNode }) {
         return result;
     }
 
+    const getCleanCopy = (data:IItem) => {
+        const cleanData = {...data};
+        delete cleanData.category;
+        return cleanData;
+    }
+
     const insertItem = async (item: IItem) => {
         setPending(true);
-        const result = await ClientUtil.post('/api/items', item) as unknown as IItem;
+        const result = await ClientUtil.post('/api/items', getCleanCopy(item)) as unknown as IItem;
         setPending(false);
         dispatch({type: 'added', data: result});
         // await getItems();
@@ -132,7 +138,7 @@ export function ItemsProvider({ children }: { children: ReactNode }) {
 
     const updateItem = async (item: IItem) => {
         setPending(true);
-        const result = await ClientUtil.put(`/api/items`, item) as unknown as IItem;
+        const result = await ClientUtil.put(`/api/items`, getCleanCopy(item)) as unknown as IItem;
         setPending(false);
         dispatch({type: 'changed', data: result});
         // await getItems();
