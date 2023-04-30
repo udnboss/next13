@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { ICondition, ICustomer, ICustomerQuery, ISort, Operator, SortDirection, IQueryResult } from "../../classes";
-import { ServerUtil } from "../util";
+import { DBProvider } from "../util";
 
 const tableName = 'customers';
 
@@ -26,7 +26,7 @@ export async function get(searchParams:URLSearchParams) {
             sort = [{column: params.sortby, direction: params.sortdir == 'asc' ? SortDirection.Asc : SortDirection.Desc} as ISort];
     }
 
-    const result = await ServerUtil.dbSelect(tableName, where, sort) as IQueryResult<ICustomerQuery, ICustomer>;
+    const result = await DBProvider.dbSelect(tableName, where, sort) as IQueryResult<ICustomerQuery, ICustomer>;
     return result;
 }
 
@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
     const newCustomer = await req.json() as ICustomer;
 
     return NextResponse.json(
-        await ServerUtil.dbInsert(tableName, newCustomer)
+        await DBProvider.dbInsert(tableName, newCustomer)
     )
 }
 
@@ -42,7 +42,7 @@ export async function PUT(req: NextRequest) {
     const customer = await req.json() as ICustomer;
 
     return NextResponse.json(
-        await ServerUtil.dbUpdate(tableName, customer)
+        await DBProvider.dbUpdate(tableName, customer)
     )
 }
 

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { ICondition, ICategory, ICategoryQuery, ISort, Operator, SortDirection, IQueryResult } from "../../classes";
-import { ServerUtil } from "../util";
+import { DBProvider } from "../util";
 
 const tableName = 'categories';
 
@@ -20,7 +20,7 @@ export async function GET(req: NextRequest) {
             sort = [{column: params.sortby, direction: params.sortdir == 'asc' ? SortDirection.Asc : SortDirection.Desc} as ISort];
     }
 
-    const result = await ServerUtil.dbSelect(tableName, where, sort) as IQueryResult<ICategoryQuery, ICategory>;
+    const result = await DBProvider.dbSelect(tableName, where, sort) as IQueryResult<ICategoryQuery, ICategory>;
     return NextResponse.json(
         result
     )
@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
     const newCategory = await req.json() as ICategory;
 
     return NextResponse.json(
-        await ServerUtil.dbInsert(tableName, newCategory)
+        await DBProvider.dbInsert(tableName, newCategory)
     )
 }
 
@@ -38,7 +38,7 @@ export async function PUT(req: NextRequest) {
     const category = await req.json() as ICategory;
 
     return NextResponse.json(
-        await ServerUtil.dbUpdate(tableName, category)
+        await DBProvider.dbUpdate(tableName, category)
     )
 }
 

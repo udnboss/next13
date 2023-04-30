@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { ICondition, IAccount, IAccountQuery, ISort, Operator, SortDirection, IQueryResult } from "../../classes";
-import { ServerUtil } from "../util";
+import { DBProvider } from "../util";
 
 const tableName = 'accounts';
 
@@ -26,7 +26,7 @@ export async function get(searchParams:URLSearchParams) {
             sort = [{column: params.sortby, direction: params.sortdir == 'asc' ? SortDirection.Asc : SortDirection.Desc} as ISort];
     }
 
-    const result = await ServerUtil.dbSelect(tableName, where, sort) as IQueryResult<IAccountQuery, IAccount>;
+    const result = await DBProvider.dbSelect(tableName, where, sort) as IQueryResult<IAccountQuery, IAccount>;
     return result;
 }
 
@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
     const newAccount = await req.json() as IAccount;
 
     return NextResponse.json(
-        await ServerUtil.dbInsert(tableName, newAccount)
+        await DBProvider.dbInsert(tableName, newAccount)
     )
 }
 
@@ -42,7 +42,7 @@ export async function PUT(req: NextRequest) {
     const account = await req.json() as IAccount;
 
     return NextResponse.json(
-        await ServerUtil.dbUpdate(tableName, account)
+        await DBProvider.dbUpdate(tableName, account)
     )
 }
 

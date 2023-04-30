@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { ICondition, ICurrency, ICurrencyQuery, ISort, Operator, SortDirection, IQueryResult } from "../../classes";
-import { ServerUtil } from "../util";
+import { DBProvider } from "../util";
 
 const tableName = 'currencies';
 
@@ -26,7 +26,7 @@ export async function get(searchParams:URLSearchParams) {
             sort = [{column: params.sortby, direction: params.sortdir == 'asc' ? SortDirection.Asc : SortDirection.Desc} as ISort];
     }
 
-    const result = await ServerUtil.dbSelect(tableName, where, sort) as IQueryResult<ICurrencyQuery, ICurrency>;
+    const result = await DBProvider.dbSelect(tableName, where, sort) as IQueryResult<ICurrencyQuery, ICurrency>;
     return result;
 }
 
@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
     const newCurrency = await req.json() as ICurrency;
 
     return NextResponse.json(
-        await ServerUtil.dbInsert(tableName, newCurrency)
+        await DBProvider.dbInsert(tableName, newCurrency)
     )
 }
 
@@ -42,7 +42,7 @@ export async function PUT(req: NextRequest) {
     const currency = await req.json() as ICurrency;
 
     return NextResponse.json(
-        await ServerUtil.dbUpdate(tableName, currency)
+        await DBProvider.dbUpdate(tableName, currency)
     )
 }
 

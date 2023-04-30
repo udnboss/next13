@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { ICondition, IQueryResult, ISale, ISaleQuery, ICustomer, ICustomerQuery, ISort, Operator, SortDirection } from "../../classes";
-import { ServerUtil } from "../util";
+import { DBProvider } from "../util";
 
 const tableName = 'sales';
 
@@ -20,10 +20,10 @@ export async function GET(req: NextRequest) {
             sort = [{column: params.sortby, direction: params.sortdir == 'asc' ? SortDirection.Asc : SortDirection.Desc} as ISort];
     }
 
-    const sales = await ServerUtil.dbSelect(tableName, where, sort) as IQueryResult<ISaleQuery, ISale>;
+    const sales = await DBProvider.dbSelect(tableName, where, sort) as IQueryResult<ISaleQuery, ISale>;
     
     const customer_ids = sales.result.map(x => x.customer_id).filter((v,i,a) => a.indexOf(v) === i);
-    const customers = await ServerUtil.dbSelect('customers', [{column: 'id', operator: Operator.IsIn, value: customer_ids} as ICondition], sort) as IQueryResult<ICustomerQuery, ICustomer>;
+    const customers = await DBProvider.dbSelect('customers', [{column: 'id', operator: Operator.IsIn, value: customer_ids} as ICondition], sort) as IQueryResult<ICustomerQuery, ICustomer>;
     const customersLookup = Object.fromEntries(customers.result.map(x => [x.id, x]));
 
     for(const sale of sales.result) {
@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
     const newSale = await req.json() as ISale;
 
     return NextResponse.json(
-        await ServerUtil.dbInsert(tableName, newSale)
+        await DBProvider.dbInsert(tableName, newSale)
     )
 }
 
@@ -45,7 +45,7 @@ export async function PUT(req: NextRequest) {
     const sale = await req.json() as ISale;
 
     return NextResponse.json(
-        await ServerUtil.dbUpdate(tableName, sale)
+        await DBProvider.dbUpdate(tableName, sale)
     )
 }
 

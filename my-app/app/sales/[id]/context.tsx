@@ -91,9 +91,17 @@ export function SaleItemsProvider({ children, sale_id }: { children: ReactNode, 
         return saleItem;
     }
 
+    const getCleanCopy = (data:ISaleItem) => {
+        const cleanData = {...data};
+        delete cleanData.item;
+        delete cleanData.sale;
+        return cleanData;
+    }
+
     const insertSaleItem = async (saleItem: ISaleItem) => {
         setPending(true);
-        const result = await ClientUtil.post('/api/saleitems', saleItem) as unknown as ISaleItem;
+
+        const result = await ClientUtil.post('/api/saleitems', getCleanCopy(saleItem)) as unknown as ISaleItem;
         setPending(false);
         dispatch({type: 'added', data: result});
         return result;
@@ -109,7 +117,7 @@ export function SaleItemsProvider({ children, sale_id }: { children: ReactNode, 
 
     const updateSaleItem = async (saleItem: ISaleItem) => {
         setPending(true);
-        const result = await ClientUtil.put(`/api/saleitems`, saleItem) as unknown as ISaleItem;
+        const result = await ClientUtil.put(`/api/saleitems`, getCleanCopy(saleItem)) as unknown as ISaleItem;
         setPending(false);
         dispatch({type: 'changed', data: result});
         return result;
