@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from "react";
-import { ICustomer } from "../../../app/classes";
+import { ICurrency, ICustomer, IQuery, IQueryResult } from "../../../app/classes";
 
 // import { useRouter } from 'next/navigation';
 import { useRouter } from 'next/router'
@@ -29,17 +29,25 @@ async function deleteCustomer(id:string) {
     return await ClientUtil.delete(`/api/customers/${id}`) as unknown as boolean;
 }
 
+async function getCurrencies() {
+    return await ClientUtil.get(`/api/currencies`).then((result:IQueryResult<IQuery, ICurrency>) => result.result);
+}
+
 export default function CustomerPage({params}){        
     const router = useRouter();    
     
     const [customer, setCustomer] = useState<ICustomer>();
     const [loading, setLoading] = useState<boolean>(false);
+    const [currencies, setCurrencies] = useState([]);
+    
 
     useEffect( () => {
         const fetchData = async () => {
             const customer = await getCustomer(router.query.id as string) as unknown as ICustomer;
             // console.log(customer);
-            setCustomer(customer);        
+            setCustomer(customer);   
+            const currencies = await getCurrencies() as never[];
+            setCurrencies(currencies);     
         }
 
         if(router.query.id !== undefined)
@@ -70,7 +78,7 @@ export default function CustomerPage({params}){
         <CustomersLayout>
         {customer &&
             
-            <EditCustomer data={customer} 
+            <EditCustomer data={customer} currencies={currencies}
             onSubmit={handleSubmit} mode="update" allowDelete={true} onDelete={handleDelete} onCancel={handleCancel}></EditCustomer>
         }    
         </CustomersLayout>         

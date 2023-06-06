@@ -6,10 +6,11 @@ import { FormEvent, useState } from "react";
 import { Button, Col, FormControl, Row } from "react-bootstrap";
 import { ICompany } from "../classes"
 import { useCompaniesContext } from "./context";
+import { useRouter } from "next/navigation";
 
 
 export default function CompaniesPage() {
-    
+    const router = useRouter();
     const context = useCompaniesContext();
     const [search, setSearch] = useState<string>('');
 
@@ -21,11 +22,22 @@ export default function CompaniesPage() {
         }
     }
 
+    const handleEdit = async (company:ICompany) => {
+        router.push(`/companies/${company.id}`);
+    }
+
+    const handleDuplicate = async (company:ICompany) => {
+        const copyCompany = {...company} as ICompany;
+        const newCompany = await context.createCompany();
+        copyCompany.id = newCompany.id;
+        const inserted = await context.insertCompany(copyCompany);
+        router.push(`/companies/${inserted.id}`);
+    }
+
     const handleSearch = async (e) => {
         const search = e.target.value;
         setSearch(search);
-        context.searchCompanies(search);
-              
+        context.searchCompanies(search);              
     }
 
     const handleRefresh = async () => {
@@ -60,6 +72,8 @@ export default function CompaniesPage() {
                                     query: { sortby: 'name', search:search, sortdir: context.query?.sortdir == 'desc' ? 'asc' : 'desc' },
                                 }}>Name</Link>
                             </th>
+                            <th>Contact</th>
+                            <th>Email</th>
                             <th></th>
                         </tr>
                     </thead>
@@ -67,12 +81,16 @@ export default function CompaniesPage() {
                         {context.companies?.map(company => (
                             company &&
                             <tr key={company.id}>
-                                <td className="align-middle">
-                                    <Link href={`/companies/${company.id}`} className="text-decoration-none">{company.name}</Link>    
-                                </td>
+                                <td>{company.name}</td>
+                                <td>{company.contact}</td>
+                                <td>{company.email}</td>
+                                                                    
                                 <td className="text-end">
-                                    <Button variant="danger" disabled={context.pending} onClick={(e:FormEvent<HTMLButtonElement>) => handleDelete(company)}>
-                                        <i className="bi-trash"></i> Delete
+                                    <Button variant="secondary" onClick={(e:FormEvent<HTMLButtonElement>) => handleEdit(company)}>
+                                        <i className="bi-pencil"></i>
+                                    </Button>
+                                    <Button className="ms-2" variant="secondary" onClick={(e:FormEvent<HTMLButtonElement>) => handleDuplicate(company)}>
+                                        <i className="bi-files"></i>
                                     </Button>
                                 </td>
                             </tr>

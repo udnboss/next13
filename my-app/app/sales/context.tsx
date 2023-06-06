@@ -2,7 +2,7 @@
 
 import { createContext, ReactNode, useContext, useReducer, useEffect, useState } from "react";
 import { ClientUtil } from "../../util";
-import { ISale, ISaleQuery, IQueryResult, ICustomer, ICustomerQuery, ICurrency, IQuery, IAccount, ICompany } from "../classes";
+import { ISale, ISaleQuery, IQueryResult, ICustomer, ICustomerQuery, ICurrency, IQuery, IAccount, ICompany, SortDirection } from "../classes";
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 type salesContextType = {
@@ -21,6 +21,7 @@ type salesContextType = {
     updateSale: (sale: ISale) => Promise<ISale>;
     refreshSale: (id:string) => Promise<ISale>;
     createSale: () => Promise<ISale>;
+    duplicateSale: (sale:ISale) => Promise<ISale>;
 };
 
 export const SalesContext = createContext<salesContextType>({} as salesContextType);
@@ -126,7 +127,7 @@ export function SalesProvider({ children }: { children: ReactNode }) {
     const router = useRouter();
     const pathname = usePathname();
 
-    const [query, setQuery] = useState<ISaleQuery>({} as ISaleQuery);
+    const [query, setQuery] = useState<ISaleQuery>({sortby: 'date', sortdir: "desc"} as ISaleQuery);
     const [pending, setPending] = useState<boolean>(false);
 
     useEffect(() => {
@@ -152,12 +153,14 @@ export function SalesProvider({ children }: { children: ReactNode }) {
         getLookups();
     }, [])
 
-    useEffect(() => {
-        console.log('searchParams changed');
-        setQuery(Object.fromEntries(searchParams?.entries() || []) as unknown as ISaleQuery);
-    }, [searchParams])
+    // useEffect(() => {
+    //     console.log('searchParams changed', searchParams);
+    //     if(searchParams)
+    //         setQuery(Object.fromEntries(searchParams.entries()) as unknown as ISaleQuery);
+    // }, [searchParams])
 
     useEffect(() => {
+        console.log('query changed', query, searchParams);
         async function fetchData() {
             await getSales();
         };
@@ -172,7 +175,7 @@ export function SalesProvider({ children }: { children: ReactNode }) {
 
     const getSales = async () => {
 
-        const params = query != null ? new URLSearchParams(Object.entries(query)).toString() : '';
+        const params = new URLSearchParams(Object.entries(query)).toString();
         setPending(true);
         const data = await ClientUtil.get(`/api/sales?${params}`) as unknown as IQueryResult<ISaleQuery, ISale>;
         // setSales(data.result);
@@ -193,6 +196,14 @@ export function SalesProvider({ children }: { children: ReactNode }) {
         const result = await ClientUtil.get(`/api/sales/${id}`) as unknown as ISale;
         setPending(false);
         dispatch({type: 'changed', data: result});
+        return result;
+    }
+
+    const duplicateSale = async(sale:ISale) => {
+        setPending(true);
+        const result = await ClientUtil.post(`/api/sales/duplicate`, sale) as unknown as ISale;
+        setPending(false);
+        dispatch({type: 'added', data: result});
         return result;
     }
 
@@ -239,7 +250,7 @@ export function SalesProvider({ children }: { children: ReactNode }) {
         return result;
     }
 
-    const value = { sales, customers, currencies, companies, accounts, query, pending, searchSales, getSales, deleteSale, createSale, insertSale, updateSale, getSale, refreshSale };
+    const value = { sales, customers, currencies, companies, accounts, query, pending, searchSales, getSales, deleteSale, createSale, insertSale, updateSale, getSale, refreshSale, duplicateSale };
 
     return (
         <SalesContext.Provider value={value}>

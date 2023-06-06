@@ -1,6 +1,7 @@
 import { promises as fs } from 'fs';
 import { ISort, ICondition, Operator, SortDirection, IQueryResult, IQuery, IEntity } from '../classes';
-const sqlite3 = require('sqlite3').verbose();
+// const sqlite3 = require('sqlite3').verbose();
+import { Database } from 'sqlite3';
 
 class DBJSONProvider implements IDBProvider {
     dbFile: string;
@@ -185,7 +186,19 @@ class DBJSONProvider implements IDBProvider {
 
     }
 
-    dbCommit = async () => {
+    dbBegin = async () => {
+        return new Promise((resolve, reject) => {
+            return resolve(true); 
+        });
+    }
+
+    dbRollback = async () => {
+        return new Promise((resolve, reject) => {
+            return resolve(true); 
+        });
+    }
+
+    dbCommit = async ():Promise<any> => {
         await fs.writeFile('db.json', JSON.stringify(this._db, null, 4));
         this.clearCache();
     }
@@ -197,15 +210,22 @@ class DBSqliteProvider implements IDBProvider {
     constructor(dbFile: string) {
         this.dbFile = dbFile;
     }
-    _db = null;
+
+    _db:Database | null = null;
 
     dbConnect = async () => {
         if (this._db)
             return this._db;
 
-        const db = new sqlite3.Database(this.dbFile);
+        const db = new Database(this.dbFile);
         this._db = db;
         return db;
+    }
+
+    dbDisconnect = async () => {
+        if(this._db) {
+            this._db.close();
+        }
     }
 
     clearCache = () => {
@@ -282,26 +302,48 @@ class DBSqliteProvider implements IDBProvider {
         return conditions.join(' and ');
     }
 
-    dbCount = async (table: string, where: ICondition[] = []):Promise<number> => {
+    dbTableColumns = async (table:string): Promise<string[]> => {
         const db = await this.dbConnect();
-        const conditions = this.buildWhere(where);
         return new Promise((resolve, reject) => {
-            db.all(`select count(*) as total from ${table} where ${conditions}`, (err, data) => {
+            db.all(`select * from pragma_table_info('${table}')`, (err, data:any[]) => {
                 if(err) {
                     return reject(err.message);
                 }
-                return resolve(data.total as number);
+                return resolve(data.map(c => c.name)); 
             })
         });
     }
 
-    dbSelect = async (table: string, where: ICondition[] = [], sort: ISort[] = []) => {
+    dbCount = async (table: string, where: ICondition[] = []):Promise<number> => {
         const db = await this.dbConnect();
         const conditions = this.buildWhere(where);
-        const orders = 'id';
+        return new Promise((resolve, reject) => {
+            db.all(`select count(*) as total from ${table} where ${conditions}`, (err:Error, data:any[]) => {
+                if(err) {
+                    return reject(err.message);
+                }
+                return resolve(data[0].total as number);
+            })
+        });
+    }
+
+    dbSelect = async (table: string, where: ICondition[] = [], sort: ISort[] = [], limit: number = 0) => {
+        const db = await this.dbConnect();
+        const conditions = this.buildWhere(where);
+        const orders:string[] = [];
+        for (const s of sort) {
+            orders.push(`${s.column} ${s.direction == SortDirection.Desc ? 'desc' : ''}`);
+        }
+
         const fetchData = async():Promise<IEntity[]> => {
             return new Promise((resolve, reject) => {
-                const sql = `select * from ${table} where ${conditions} order by ${orders}`
+                var sql = `select * from ${table} where ${conditions}`;
+                if(orders.length) {
+                    sql += ` order by ${orders.join(', ')}`;
+                }
+                if (limit > 0){
+                    sql += ` limit ${limit}`;
+                }
                 db.all(sql, (err, data) => {
                     if(err) {
                         return reject(err.message + ' ' + sql);
@@ -312,62 +354,99 @@ class DBSqliteProvider implements IDBProvider {
         }
 
         const results = await fetchData();
-        console.log('RESULTS:');
-        console.dir(results);
+        // console.log('RESULTS:');
+        // console.dir(results);        
 
         return { result: results, count: results.length, total: results.length } as IQueryResult<IQuery, IEntity>;
     }
 
-    dbInsert = async (table: string, record: IEntity):Promise<IEntity> => {
+    dbBegin = async () => {
         const db = await this.dbConnect();
-        const columns = Object.entries(record).map(x => x[0]).join(', ');
-        const values = Object.entries(record).map(x => this.prepareValue(x[1])).join(', ');
         return new Promise((resolve, reject) => {
-            db.run('BEGIN');
-            db.run(`insert into ${table}(${columns}) select ${values}`, (err) => {
+            db.run('BEGIN', (err:Error) => {
+                console.log('begin transaction')
                 if(err) {
-                    db.run('ROLLBACK');
                     return reject(err.message);
                 }
+
+                return resolve(true); 
+            });
+        });
+    }
+
+    dbCommit = async ():Promise<any> => {
+        const db = await this.dbConnect();
+        return new Promise((resolve, reject) => {
+            db.run('COMMIT', (err:Error) => {
+                console.log('commit transaction')
+                if(err) {
+                    return reject(err.message);
+                }
+                this.clearCache();
+                return resolve(true); 
+            });
+        });
+    }
+
+    dbRollback = async () => {
+        const db = await this.dbConnect();
+        return new Promise((resolve, reject) => {
+            db.run('ROLLBACK', (err:Error) => {
+                console.log('rollback transaction')
+                if(err) {
+                    return reject(err.message);
+                }
+
+                return resolve(true); 
+            });
+        });
+    }
+
+    dbInsert = async (table: string, record: IEntity):Promise<IEntity> => {
+        const db = await this.dbConnect();
+        const dbTableCols = await this.dbTableColumns(table);
+        const columns = Object.entries(record).map(x => x[0]).filter(c => dbTableCols.indexOf(c) > -1).join(', ');
+        const values = Object.entries(record).filter(x => dbTableCols.indexOf(x[0]) > -1).map(x => this.prepareValue(x[1])).join(', ');
+        return new Promise((resolve, reject) => {
+            db.run(`insert into ${table}(${columns}) select ${values}`, (err:Error) => {
+                if(err) {
+                    return reject(err.message);
+                }
+
                 return resolve(record);
-            })
+            });            
         }); 
     }
 
     dbDelete = async (table: string, id: string):Promise<boolean> => {
         const db = await this.dbConnect();
         return new Promise((resolve, reject) => {
-            db.run('BEGIN');
-            db.run(`delete from ${table} where id = ${this.prepareValue(id)}`, (err) => {
+            db.run(`delete from ${table} where id = ${this.prepareValue(id)}`, (err:Error) => {
                 if(err) {
-                    db.run('ROLLBACK');
                     return reject(err.message);
                 }
-                return resolve(true);
-            })
+                return resolve(true);  
+            });            
         });
     }
 
     dbUpdate = async (table: string, record: IEntity):Promise<IEntity> => {
         const db = await this.dbConnect();
-        const values = Object.entries(record).map(x => `${x[0]} = ${this.prepareValue(x[1])}`).join(', ');
+        const dbTableCols = await this.dbTableColumns(table);
+        const values = Object.entries(record)
+            .filter(x => dbTableCols.indexOf(x[0]) > -1)
+            .map(x => `${x[0]} = ${this.prepareValue(x[1])}`).join(', ');
         return new Promise((resolve, reject) => {
-            db.run('BEGIN');
             db.run(`update ${table} set ${values} where id = ${this.prepareValue(record.id)}`, (err) => {
                 if(err) {
                     db.run('ROLLBACK');
                     return reject(err.message);
                 }
                 return resolve(record);
-            })
+            });                
         });
     }
 
-    dbCommit = async () => {
-        const db = await this.dbConnect();
-        db.run('COMMIT');
-        this.clearCache();
-    }
 }
 
 export class DBProvider {
@@ -386,27 +465,35 @@ export class DBProvider {
         return this._provider.dbCount(table, where);
     }
 
-    static dbSelect = async (table: string, where: ICondition[] = [], sort: ISort[] = []) => {
-        return this._provider.dbSelect(table, where, sort);
+    static dbSelect = async (table: string, where: ICondition[] = [], sort: ISort[] = [], limit: number = -1) => {
+        return this._provider.dbSelect(table, where, sort, limit);
     }
 
     static dbInsert = async (table: string, record: IEntity) => {
         const result = this._provider.dbInsert(table, record);
-        this._provider.dbCommit();
+        // this._provider.dbCommit();
         return result;
     }
 
     static dbDelete = async (table: string, id: string) => {
         const result =  this._provider.dbDelete(table, id);
-        this._provider.dbCommit();
+        // this._provider.dbCommit();
         return result;
     }
 
     static dbUpdate = async (table: string, record: IEntity) => {
         const result =  this._provider.dbUpdate(table, record);
-        this._provider.dbCommit();
+        // this._provider.dbCommit();
         return result;
 
+    }
+
+    static dbBegin = async () => {
+        return this._provider.dbBegin();
+    }
+
+    static dbRollback = async () => {
+        return this._provider.dbRollback();
     }
 
     static dbCommit = async () => {
@@ -414,8 +501,6 @@ export class DBProvider {
     }
 
 }
-
-
 
 export interface IDBProvider {
     dbConnect: () => {};
@@ -425,5 +510,7 @@ export interface IDBProvider {
     dbInsert: (table: string, record: IEntity) => Promise<IEntity>;
     dbUpdate: (table: string, record: IEntity) => Promise<IEntity>;
     dbDelete: (table: string, id: string) => Promise<boolean>;
-    dbCommit: () => Promise<void>;
+    dbCommit: () => Promise<any>;
+    dbBegin: () => Promise<any>;
+    dbRollback: () => Promise<any>;
 }

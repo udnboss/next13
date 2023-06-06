@@ -46,6 +46,7 @@ export function EditSaleItem({data = {id: ''}, mode = 'create', allowDelete = fa
                     <Form.Label column sm="2" className="text-end">Item</Form.Label>
                     <Col sm="10">
                         <Form.Select id="item_id" value={saleItem.item_id as string} onChange={handleForm}>
+                            <option value="">-</option>
                             {items?.map(item => (
                                 <option key={item.id} value={item.id}>{item.name}</option>
                             ))}

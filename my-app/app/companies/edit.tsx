@@ -5,6 +5,7 @@ import { Button, Col, Form, Row } from "react-bootstrap";
 import { ICompany } from "../classes";
 
 import { useRouter } from 'next/navigation';
+import FormInput from "../../components/form-input";
 
 export function EditCompany({data = {id: '', name: ''}, mode = 'create', allowDelete = false, disabled = false, onDelete = (company) => {}, onSubmit}) {
     const router = useRouter();
@@ -48,6 +49,12 @@ export function EditCompany({data = {id: '', name: ''}, mode = 'create', allowDe
                         <Form.Text className="text-muted">Company Name</Form.Text>
                     </Col>
                 </Form.Group>
+                <FormInput name="address" label="Address" description="" value={company.address} onChange={handleForm}></FormInput>
+                <FormInput name="crn" label="CRN" description="Commercial Registration Number" value={company.crn} onChange={handleForm}></FormInput>
+                <FormInput name="trn" label="TRN" description="Tax Registration Number" value={company.trn} onChange={handleForm}></FormInput>
+                <FormInput name="contact" label="Contact Name" description="Contact Person Name" value={company.contact} onChange={handleForm}></FormInput>
+                <FormInput name="mobile" label="Contact Mobile" description="Contact Mobile Number" value={company.mobile} onChange={handleForm}></FormInput>
+                <FormInput name="email" label="Contact Email" description="Contact Email" value={company.email} onChange={handleForm}></FormInput>
                 <Row>
                     <Col sm="2"></Col>
                     <Col sm="10">

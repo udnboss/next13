@@ -5,6 +5,7 @@ import { Button, Col, Form, Row } from "react-bootstrap";
 import { IAccount } from "../classes";
 
 import { useRouter } from 'next/navigation';
+import FormInput from "../../components/form-input";
 
 export function EditAccount({data = {id: '', label: ''}, mode = 'create', allowDelete = false, disabled = false, onDelete = (account) => {}, onSubmit}) {
     const router = useRouter();
@@ -34,20 +35,15 @@ export function EditAccount({data = {id: '', label: ''}, mode = 'create', allowD
     return (
         <>
             <Form onSubmit={handleSubmit}>
-                <Form.Group as={Row} className="mb-3">
-                    <Form.Label column sm="2" className="text-end">ID</Form.Label>
-                    <Col sm="10">
-                        <Form.Control type="text" id="id" placeholder="id" value={account.id} onChange={handleForm} />
-                        <Form.Text className="text-muted">Account Identifier</Form.Text>     
-                    </Col>                       
-                </Form.Group>
-                <Form.Group as={Row} className="mb-3">
-                    <Form.Label column sm="2" className="text-end">Name</Form.Label>
-                    <Col sm="10">
-                        <Form.Control type="text" id="label" placeholder="label" value={account.label} onChange={handleForm} />
-                        <Form.Text className="text-muted">Account Name</Form.Text>
-                    </Col>
-                </Form.Group>
+                <FormInput name="id" label="ID" description="Identifier" onChange={handleForm} value={account.id}></FormInput>
+                <FormInput name="label" label="Label" description="Account Display Label" onChange={handleForm} value={account.label}></FormInput>
+                <FormInput name="account_name" label="Account Name" description="Account Holder Name" onChange={handleForm} value={account.account_name}></FormInput>
+                <FormInput name="account_iban" label="IBAN" description="Account IBAN" onChange={handleForm} value={account.account_iban}></FormInput>
+                <FormInput name="account_address" label="Account Address" description="Account Holder Address" onChange={handleForm} value={account.account_address}></FormInput>
+                <FormInput name="bank_name" label="Bank Name" description="Bank Name" onChange={handleForm} value={account.bank_name}></FormInput>
+                <FormInput name="bank_address" label="Bank Address" description="Bank Address" onChange={handleForm} value={account.bank_address}></FormInput>
+                <FormInput name="bank_swift" label="Swift Code" description="Bank Swift Code" onChange={handleForm} value={account.bank_swift}></FormInput>
+                
                 <Row>
                     <Col sm="2"></Col>
                     <Col sm="10">

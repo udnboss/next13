@@ -12,6 +12,7 @@ type companiesContextType = {
     searchCompanies: (search: string) => Promise<void>;
     getCompanies: () => Promise<ICompany[]>;
     getCompany: (id: string) => Promise<ICompany>;
+    createCompany: () => Promise<ICompany>;
     insertCompany: (company: ICompany) => Promise<ICompany>;
     deleteCompany: (company: ICompany) => Promise<boolean>;
     updateCompany: (company: ICompany) => Promise<ICompany>;
@@ -118,6 +119,11 @@ export function CompaniesProvider({ children }: { children: ReactNode }) {
         return cleanData;
     }
 
+    const createCompany = async () => {
+        const company = await ClientUtil.get('/api/companies/new') as ICompany;
+        return company;
+    }
+
     const insertCompany = async (company: ICompany) => {
         setPending(true);
         const result = await ClientUtil.post('/api/companies', getCleanCopy(company)) as unknown as ICompany;
@@ -145,7 +151,7 @@ export function CompaniesProvider({ children }: { children: ReactNode }) {
         return result;
     }
 
-    const value = { companies, query, pending, searchCompanies, getCompanies, deleteCompany, insertCompany, updateCompany, getCompany };
+    const value = { companies, query, pending, searchCompanies, getCompanies, deleteCompany, createCompany, insertCompany, updateCompany, getCompany };
 
     return (
         <CompaniesContext.Provider value={value}>

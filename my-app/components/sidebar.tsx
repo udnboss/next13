@@ -34,6 +34,16 @@ export default function SideBar() {
                             </Link>
                         </li>
                         <li>
+                            <Link className="dropdown-item text-white text-decoration-none" href="/accounts">
+                                <i className="fs-4 bi-box me-1"></i> <span className="ms-1">Accounts</span>
+                            </Link>
+                        </li>
+                        <li>
+                            <Link className="dropdown-item text-white text-decoration-none" href="/companies">
+                                <i className="fs-4 bi-box me-1"></i> <span className="ms-1">Companies</span>
+                            </Link>
+                        </li>
+                        <li>
                             <Link className="dropdown-item text-white text-decoration-none" href="/customers">
                                 <i className="fs-4 bi-person me-1"></i> <span className="ms-1">Customers</span>
                             </Link>

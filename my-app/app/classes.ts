@@ -43,22 +43,8 @@ export interface IQueryResult<Q,T> {
     result: T[]    
 }
 
-export interface IItemQuery extends IQuery {
-    category_id: string;
-}
-
 export interface IEntity {
     id: string;
-}
-
-export interface IItem extends IEntity {
-    name: string;
-    category_id: string | null;
-    category?:ICategory | null;
-}
-
-export interface ICategoryQuery extends IQuery {
-    category_id: string;
 }
 
 export interface ICategory extends IEntity {
@@ -66,11 +52,11 @@ export interface ICategory extends IEntity {
     category_id: string | null;
     items?: IItem[];
 }
-
-export interface ICustomerQuery extends IQuery {
-
+export interface IItem extends IEntity {
+    name: string;
+    category_id: string | null;
+    category?:ICategory | null;
 }
-
 export interface ICustomer extends IEntity {
     name: string;
     address: string | null;
@@ -79,23 +65,29 @@ export interface ICustomer extends IEntity {
     currency?: ICurrency | null;
     sales?: ISale[];
 }
-
-export interface ISaleQuery extends IQuery {
-    customer_id: string;
-    number: number;
-    date_from: string;
-    date_to: string;
-    reference: string; 
-}
-
-export interface ICurrencyQuery extends IQuery {
-
-}
 export interface ICurrency extends IEntity {
     name: string;
     symbol: string;
 }
+export interface ICompany extends IEntity {
+    name: string;
+    address: string;
+    crn: string;
+    trn: string;
+    contact: string;
+    mobile: string;
+    email: string;
 
+}
+export interface IAccount extends IEntity {
+    label: string;
+    bank_name: string;
+    bank_address: string;
+    bank_swift: string;
+    account_name: string;
+    account_iban: string;
+    account_address: string;
+}
 export interface ISale extends IEntity {    
     company_id: string | null;
     account_id: string | null;
@@ -114,46 +106,42 @@ export interface ISale extends IEntity {
     company?: ICompany | null;
     items?: ISaleItem[];
 }
-
-export interface ISaleItemQuery extends IQuery {
-    sale_id: string;
-}
-
 export interface ISaleItem extends IEntity {
     sale_id: string | null;
     item_id: string | null;
     description: string;
     quantity: number;
     price: number;    
+    
     sale?: ISale | null;
     item?: IItem | null;
 }
 
+export interface ICategoryQuery extends IQuery {
+    category_id: string;
+}
+export interface IItemQuery extends IQuery {
+    category_id: string;
+}
+export interface ICustomerQuery extends IQuery {
+
+}
+export interface ISaleQuery extends IQuery {
+    customer_id: string;
+    number: number;
+    date_from: string;
+    date_to: string;
+    reference: string; 
+}
+export interface ICurrencyQuery extends IQuery {
+}
+export interface ISaleItemQuery extends IQuery {
+    sale_id: string;
+}
 export interface ICompanyQuery extends IQuery {
 
 }
-
-export interface ICompany extends IEntity {
-    name: string;
-    address: string;
-    crn: string;
-    trn: string;
-    contact: string;
-    mobile: string;
-    email: string;
-
-}
-
 export interface IAccountQuery extends IQuery {
 
 }
 
-export interface IAccount extends IEntity {
-    label: string;
-    bank_name: string;
-    bank_address: string;
-    bank_swift: string;
-    account_name: string;
-    account_iban: string;
-    account_address: string;
-}

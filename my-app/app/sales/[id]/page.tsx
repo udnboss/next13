@@ -10,6 +10,7 @@ import SaleItemsPage from "./saleitems";
 import { SaleItemsProvider, useSaleItemsContext } from "./context";
 import ViewSale from "./view";
 import { Button, Col, Row } from "react-bootstrap";
+import SalePartialPage from "./partial";
 
 
 
@@ -35,7 +36,6 @@ export default function SalePage({params}){
     }
 
     const handleDelete = async (sale:ISale) => {
-        const deleted = await context.deleteSale(sale);     
         router.push(`/sales`);   
     } 
 
@@ -57,18 +57,23 @@ export default function SalePage({params}){
         // setSale(await context.getSale(params.id));
     }
 
+    const handleDuplicate = async(sale:ISale) => {
+        const newSale = await context.duplicateSale(sale);
+        router.push(`/sales?id=${newSale.id}`);
+    }
+
+    const handleBack = async () => {
+        router.push(`/sales?id=${sale?.id}`);
+    }
+
     return ( sale &&
         <>
             {!edit && 
-            <Row>
-                <Col>
-                    <ViewSale sale={sale}></ViewSale>
-                </Col>
-                <Col className="text-end">
-                    <Button variant="secondary" onClick={handleEdit}><i className="bi-pencil"></i> Edit</Button>
-                    <Button variant="secondary ms-2" onClick={handlePrint}><i className="bi-printer"></i> Print</Button>
-                </Col>                
-            </Row>
+            <>
+                <Button onClick={handleBack} variant="secondary">Back</Button>
+                <SalePartialPage sale={sale} onDelete={handleDelete} onDuplicate={handleDuplicate}></SalePartialPage>
+                
+            </>            
             }
             {edit &&
                 <EditSale data={sale} 
@@ -79,9 +84,7 @@ export default function SalePage({params}){
                     disabled={false} mode="update" 
                     onSubmit={handleSubmit} onCancel={handleCancel} allowDelete={true} onDelete={handleDelete}></EditSale>
             }
-            <SaleItemsProvider sale_id={params.id}>
-                <SaleItemsPage sale={sale} onChange={handleChange}></SaleItemsPage>
-            </SaleItemsProvider>            
+                        
         </>
         
     );

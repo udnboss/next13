@@ -2,14 +2,15 @@
 
 import { useState } from "react";
 import { Button, Col, Form, Row } from "react-bootstrap";
-import { ICustomer } from "../../app/classes";
+import { ICurrency, ICustomer } from "../../app/classes";
+import FormInput from "../../components/form-input";
 
 export default function EditCustomer({data = {id: '', name: '', address: ''} as ICustomer, mode = 'create', 
-    allowDelete = false, onDelete = (customer) => {}, onCancel, onSubmit}) {
+    allowDelete = false, onDelete = (customer) => {}, onCancel, onSubmit, currencies = []}) {
 
     const [customer, setCustomer] = useState<ICustomer>(data as ICustomer);
 
-    const handleForm = (e: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
+    const handleForm = (e: React.FormEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>): void => {
         setCustomer({
             ...customer,
             [e.currentTarget.id]: e.currentTarget.value,
@@ -34,18 +35,21 @@ export default function EditCustomer({data = {id: '', name: '', address: ''} as 
     return (
         <>
             <Form onSubmit={handleSubmit}>
+                <FormInput name="id" label="ID" description="Customer Identifier" onChange={handleForm} value={customer.id}></FormInput>
+                <FormInput name="name" label="Name" description="Customer Name" onChange={handleForm} value={customer.name}></FormInput>
+                <FormInput name="address" label="Address" description="Customer Address" onChange={handleForm} value={customer.address}></FormInput>
+                <FormInput name="contact" label="Contact" description="Customer Contact" onChange={handleForm} value={customer.contact}></FormInput>
+                
                 <Form.Group as={Row} className="mb-3">
-                    <Form.Label column sm="2" className="text-end">ID</Form.Label>
+                    <Form.Label column sm="2" className="text-end">Currency</Form.Label>
                     <Col sm="10">
-                        <Form.Control type="text" id="id" placeholder="id" value={customer.id || ''} onChange={handleForm} />
-                        <Form.Text className="text-muted">Customer Identifier</Form.Text>     
-                    </Col>                       
-                </Form.Group>
-                <Form.Group as={Row} className="mb-3">
-                    <Form.Label column sm="2" className="text-end">Name</Form.Label>
-                    <Col sm="10">
-                        <Form.Control type="text" id="name" placeholder="name" value={customer.name || ''} onChange={handleForm} />
-                        <Form.Text className="text-muted">Customer Name</Form.Text>
+                        <Form.Select id="currency_id" value={customer.currency_id as string} onChange={handleForm}>
+                            <option>-</option>
+                            {currencies?.map((currency: ICurrency) => (
+                                <option key={currency.id} value={currency.id}>{currency.name}</option>    
+                            ))}
+                        </Form.Select>
+                        <Form.Text className="text-muted">Sale Currency</Form.Text>
                     </Col>
                 </Form.Group>
                 <Row>

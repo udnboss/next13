@@ -10,7 +10,7 @@ import { EditSaleItem } from "./editsaleitem";
 import { randomUUID } from "crypto";
 
 
-export default function SaleItemsPage({sale, onChange = () => {}}: {sale:ISale, onChange: () => void}) {
+export default function SaleItemsPage({sale, onChange = async () => {}}: {sale:ISale, onChange: () => Promise<void>}) {
 
     const context = useSaleItemsContext();
     const [editId, setEditId] = useState<string>('');
@@ -52,7 +52,6 @@ export default function SaleItemsPage({sale, onChange = () => {}}: {sale:ISale, 
     return (
         <div>
             <>
-                <h2>SaleItems Page</h2>
                 <div className="text-end mb-3">
 
                     <Button variant="primary" onClick={handleCreate}>

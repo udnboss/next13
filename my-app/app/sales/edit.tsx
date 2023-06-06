@@ -47,36 +47,36 @@ export function EditSale({data = {id: ''}, mode = 'create', customers = [], curr
                 <Form.Group as={Row} className="mb-3">
                     <Form.Label column sm="2" className="text-end">ID</Form.Label>
                     <Col sm="10">
-                        <Form.Control type="text" id="id" placeholder="id" value={sale.id} onChange={handleForm} />
-                        <Form.Text className="text-muted">Sale Identifier</Form.Text>     
+                        <Form.Control disabled={true} type="text" id="id" placeholder="id" value={sale.id} onChange={handleForm} />
+                        {/* <Form.Text className="text-muted">Sale Identifier</Form.Text>      */}
                     </Col>                       
                 </Form.Group>
                 <Form.Group as={Row} className="mb-3">
                     <Form.Label column sm="2" className="text-end">Number</Form.Label>
                     <Col sm="10">
                         <Form.Control type="text" id="number" placeholder="number" value={sale.number} onChange={handleForm} />
-                        <Form.Text className="text-muted">Invoice Number</Form.Text>
+                        {/* <Form.Text className="text-muted">Invoice Number</Form.Text> */}
                     </Col>
                 </Form.Group>
                 <Form.Group as={Row} className="mb-3">
                     <Form.Label column sm="2" className="text-end">Date</Form.Label>
                     <Col sm="10">
                         <Form.Control type="date" id="date" placeholder="date" value={sale.date} onChange={handleForm} />
-                        <Form.Text className="text-muted">Issue Date</Form.Text>
+                        {/* <Form.Text className="text-muted">Issue Date</Form.Text> */}
                     </Col>
                 </Form.Group>
                 <Form.Group as={Row} className="mb-3">
                     <Form.Label column sm="2" className="text-end">Reference</Form.Label>
                     <Col sm="10">
                         <Form.Control type="text" id="reference" placeholder="reference" value={sale.reference as string} onChange={handleForm} />
-                        <Form.Text className="text-muted">Sale Reference</Form.Text>
+                        {/* <Form.Text className="text-muted">Sale Reference</Form.Text> */}
                     </Col>
                 </Form.Group>
                 <Form.Group as={Row} className="mb-3">
                     <Form.Label column sm="2" className="text-end">Place of Supply</Form.Label>
                     <Col sm="10">
                         <Form.Control type="text" id="place" placeholder="place" value={sale.place as string} onChange={handleForm} />
-                        <Form.Text className="text-muted">Sale Place of Supply</Form.Text>
+                        {/* <Form.Text className="text-muted">Sale Place of Supply</Form.Text> */}
                     </Col>
                 </Form.Group>
                 <Form.Group as={Row} className="mb-3">
@@ -88,47 +88,50 @@ export function EditSale({data = {id: ''}, mode = 'create', customers = [], curr
                                 <option key={customer.id} value={customer.id}>{customer.name}</option>    
                             ))}
                         </Form.Select>
-                        <Form.Text className="text-muted">Sale Customer</Form.Text>
+                        {/* <Form.Text className="text-muted">Sale Customer</Form.Text> */}
                     </Col>
                 </Form.Group>
                 <Form.Group as={Row} className="mb-3">
                     <Form.Label column sm="2" className="text-end">Currency</Form.Label>
                     <Col sm="10">
                         <Form.Select id="currency_id" value={sale.currency_id as string} onChange={handleForm}>
+                            <option>-</option>
                             {currencies?.map((currency: ICurrency) => (
                                 <option key={currency.id} value={currency.id}>{currency.name}</option>    
                             ))}
                         </Form.Select>
-                        <Form.Text className="text-muted">Sale Currency</Form.Text>
+                        {/* <Form.Text className="text-muted">Sale Currency</Form.Text> */}
                     </Col>
                 </Form.Group>
                 <Form.Group as={Row} className="mb-3">
                     <Form.Label column sm="2" className="text-end">Company</Form.Label>
                     <Col sm="10">
                         <Form.Select id="company_id" value={sale.company_id as string} onChange={handleForm}>
+                            <option>-</option>
                             {companies?.map((company: ICompany) => (
-                                <option key={company.id} value={company.id}>{company.name}</option>    
+                                <option key={company.id} value={company.id}>{company.name} - {company.contact} - {company.email}</option>    
                             ))}
                         </Form.Select>
-                        <Form.Text className="text-muted">Sale Company</Form.Text>
+                        {/* <Form.Text className="text-muted">Sale Company</Form.Text> */}
                     </Col>
                 </Form.Group>
                 <Form.Group as={Row} className="mb-3">
                     <Form.Label column sm="2" className="text-end">Account</Form.Label>
                     <Col sm="10">
                         <Form.Select id="account_id" value={sale.account_id as string} onChange={handleForm}>
+                            <option>-</option>
                             {accounts?.map((account: IAccount) => (
                                 <option key={account.id} value={account.id}>{account.label}</option>    
                             ))}
                         </Form.Select>
-                        <Form.Text className="text-muted">Sale Account</Form.Text>
+                        {/* <Form.Text className="text-muted">Sale Account</Form.Text> */}
                     </Col>
                 </Form.Group>
                 <Form.Group as={Row} className="mb-3">
                     <Form.Label column sm="2" className="text-end">Confirmed</Form.Label>
                     <Col sm="10">
                         <Form.Check type="switch" label="Confirmed" id="confirmed" checked={sale.confirmed} onChange={handleConfirmed} />
-                        <Form.Text className="text-muted">Confirmed</Form.Text>
+                        {/* <Form.Text className="text-muted">Confirmed</Form.Text> */}
                     </Col>
                 </Form.Group>
                 <Row>

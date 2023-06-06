@@ -21,7 +21,7 @@ export default function CreateSalePage({}){
 
     const handleSubmit = async (sale:ISale) => {
         const inserted = await context.insertSale(sale);
-        router.push('/sales');
+        router.push(`/sales/${inserted.id}`);
     }
 
     return (sale &&
