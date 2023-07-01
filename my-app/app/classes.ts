@@ -100,6 +100,9 @@ export interface ISale extends IEntity {
     reference: string | null;    
     confirmed: boolean;
 
+    reference_date: string | null;
+    due_date: string | null;
+
     currency?: ICurrency | null;
     customer?: ICustomer | null;
     account?: IAccount | null;

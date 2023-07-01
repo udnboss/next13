@@ -5,7 +5,16 @@ import { DBProvider } from "../../util";
 const tableName = 'sales';
 
 export async function GET(req: NextRequest, { params }) {
-    const where = [{column: 'id', operator: Operator.Equals, value: params.id} as ICondition];
+    const sale = await _get(params.id);
+    if(sale) {     
+        return NextResponse.json(sale);
+    }
+
+    return NextResponse.json({}, { status: 404});
+}
+
+export async function _get(id:string) {
+    const where = [{column: 'id', operator: Operator.Equals, value: id} as ICondition];
     const sales = await DBProvider.dbSelect(tableName, where) as IQueryResult<ISaleQuery, ISale>;
 
     if (sales.count) {
@@ -46,11 +55,11 @@ export async function GET(req: NextRequest, { params }) {
         }
 
         sale.items = saleItems;
-         
-        return NextResponse.json(sale);
+
+        return sale;
     }
 
-    return NextResponse.json({}, { status: 404});
+    return null;
 }
 
 export async function DELETE(req: NextRequest, { params }) {        

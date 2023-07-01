@@ -59,12 +59,24 @@ export function EditSale({data = {id: ''}, mode = 'create', customers = [], curr
                     </Col>
                 </Form.Group>
                 <Form.Group as={Row} className="mb-3">
-                    <Form.Label column sm="2" className="text-end">Date</Form.Label>
+                    <Form.Label column sm="2" className="text-end">Reference Date</Form.Label>
                     <Col sm="10">
-                        <Form.Control type="date" id="date" placeholder="date" value={sale.date} onChange={handleForm} />
-                        {/* <Form.Text className="text-muted">Issue Date</Form.Text> */}
+                        <Form.Control type="date" id="reference_date" placeholder="reference_date" value={sale.reference_date as string} onChange={handleForm} />
                     </Col>
                 </Form.Group>
+                <Form.Group as={Row} className="mb-3">
+                    <Form.Label column sm="2" className="text-end">Invoice Date</Form.Label>
+                    <Col sm="10">
+                        <Form.Control type="date" id="date" placeholder="date" value={sale.date} onChange={handleForm} />
+                    </Col>
+                </Form.Group>
+                <Form.Group as={Row} className="mb-3">
+                    <Form.Label column sm="2" className="text-end">Due Date</Form.Label>
+                    <Col sm="10">
+                        <Form.Control type="date" id="due_date" placeholder="due_date" value={sale.due_date as string} onChange={handleForm} />
+                    </Col>
+                </Form.Group>
+                
                 <Form.Group as={Row} className="mb-3">
                     <Form.Label column sm="2" className="text-end">Reference</Form.Label>
                     <Col sm="10">

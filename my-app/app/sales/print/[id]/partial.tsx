@@ -71,6 +71,8 @@ export default function PrintPartialSale({sale, onCancel}: {sale:ISale, onCancel
                             <div>Invoice Number: { ("0000" + sale.number).slice(-4) }</div>
                             
                             <div>Issue Date: { new Date(sale.date).toLocaleDateString("en-US", { year: 'numeric', month: 'long', day: 'numeric' }) }</div>
+                            
+                            {sale.due_date && <div>Due Date: { new Date(sale.due_date).toLocaleDateString("en-US", { year: 'numeric', month: 'long', day: 'numeric' }) }</div>}
 
                             {sale.place && <div>Place of Supply: { sale.place }</div>}
 

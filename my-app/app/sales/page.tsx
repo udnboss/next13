@@ -17,7 +17,7 @@ export default function SalesPage() {
     const context = useSalesContext();
     const [search, setSearch] = useState<string>('');
     const [viewMode, setViewMode] = useState<string>('preview');
-    const [selected, setSelected] = useState<ISale>();
+    // const [selected, setSelected] = useState<ISale>();
 
     const viewModes = [
         { name: 'Table', value: 'table' },
@@ -27,7 +27,8 @@ export default function SalesPage() {
 
     useEffect(()=>{
         const sale = context.sales[context.sales.findIndex(x => x.id == searchParams?.get('id'))];
-        setSelected(sale);       
+        context.selectSale(sale);
+        // setSelected(sale);       
     }, []);  // eslint-disable-line react-hooks/exhaustive-deps
 
     const handleViewModeChange = async (mode) => {
@@ -35,8 +36,9 @@ export default function SalesPage() {
     }
 
     const handleSelect = async (sale:ISale) => {   
-        const freshSale = await context.refreshSale(sale.id);     
-        setSelected(freshSale);
+        const freshSale = await context.refreshSale(sale.id);    
+        context.selectSale(freshSale); 
+        // setSelected(freshSale);
     }
 
     const handleDelete = async (sale:ISale) => {
@@ -45,13 +47,15 @@ export default function SalesPage() {
 
     const handleDuplicate = async(sale:ISale) => {
         const newSale = await context.duplicateSale(sale);
-        setSelected(newSale);
+        // setSelected(newSale);
+        context.selectSale(newSale);
     }
 
     const handleSearch = async (e) => {
         const search = e.target.value;
         setSearch(search);
         context.searchSales(search);
+        context.selectSale(context.sales[0] || null);
               
     }
 
@@ -59,9 +63,11 @@ export default function SalesPage() {
         await context.getSales();
     }
 
-    const handleSaleItemsChange = async () => {
-        await context.refreshSale((selected as ISale).id);
-    }
+    // const handleSaleItemsChange = async () => {
+    //     if(context.selectedSale) {
+    //         await context.refreshSale(context.selectedSale?.id);
+    //     }
+    // }
 
 
 
@@ -108,7 +114,7 @@ export default function SalesPage() {
                             <ListGroup>
                                 {context.sales?.map(sale => (
                                     sale &&
-                                    <ListGroupItem key={sale.id} active={selected == sale} onClick={() => handleSelect(sale)}>
+                                    <ListGroupItem key={sale.id} active={context.selectedSale == sale} onClick={() => handleSelect(sale)}>
                                         <div className="fw-bold">{sale.customer?.name}</div>
                                         <Row>
                                             <Col>{sale.number} </Col>
@@ -124,8 +130,8 @@ export default function SalesPage() {
                             </ListGroup>
                         </Col>
                         <Col className="border rounded p-3" style={{height: "100%", overflowY: "scroll"}}>
-                            {selected && 
-                                <SalePartialPage onDelete={handleDelete} onDuplicate={handleDuplicate} sale={selected as ISale}></SalePartialPage>                        
+                            {context.selectedSale && 
+                                <SalePartialPage onDelete={handleDelete} onDuplicate={handleDuplicate} sale={context.selectedSale as ISale}></SalePartialPage>                        
                             }
                         </Col>
                     </Row>

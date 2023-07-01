@@ -13,6 +13,8 @@ type salesContextType = {
     currencies: ICurrency[];
     accounts: IAccount[];
     companies: ICompany[];
+    selectedSale: ISale | null;
+    selectSale: (sale:ISale) => void;
     searchSales: (search: string) => Promise<void>;
     getSales: () => Promise<ISale[]>;
     getSale: (id: string) => Promise<ISale>;
@@ -95,7 +97,7 @@ function salesReducer(sales, action) {
             return [...action.data];
         }        
         case 'added': {
-            return [...sales, action.data];
+            return [action.data, ...sales];
         }
         case 'changed': {
             return sales.map((t:ISale) => {
@@ -129,6 +131,8 @@ export function SalesProvider({ children }: { children: ReactNode }) {
 
     const [query, setQuery] = useState<ISaleQuery>({sortby: 'date', sortdir: "desc"} as ISaleQuery);
     const [pending, setPending] = useState<boolean>(false);
+
+    const [selectedSale, setSelectedSale] = useState<ISale|null>(null);
 
     useEffect(() => {
         const getLookups = async () => {
@@ -196,6 +200,7 @@ export function SalesProvider({ children }: { children: ReactNode }) {
         const result = await ClientUtil.get(`/api/sales/${id}`) as unknown as ISale;
         setPending(false);
         dispatch({type: 'changed', data: result});
+        setSelectedSale(result);
         return result;
     }
 
@@ -246,11 +251,16 @@ export function SalesProvider({ children }: { children: ReactNode }) {
         const result = await ClientUtil.put(`/api/sales`, getCleanCopy(sale)) as unknown as ISale;
         setPending(false);
         dispatch({type: 'changed', data: result});
+        setSelectedSale(result);
         // await getSales();
         return result;
     }
 
-    const value = { sales, customers, currencies, companies, accounts, query, pending, searchSales, getSales, deleteSale, createSale, insertSale, updateSale, getSale, refreshSale, duplicateSale };
+    const selectSale = async (sale: ISale) => {
+        setSelectedSale(sale);
+    }
+
+    const value = { sales, customers, currencies, companies, accounts, query, pending, selectedSale, selectSale, searchSales, getSales, deleteSale, createSale, insertSale, updateSale, getSale, refreshSale, duplicateSale };
 
     return (
         <SalesContext.Provider value={value}>

@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { ICondition, IQueryResult, ISale, ISaleQuery, ICustomer, ICustomerQuery, ISort, Operator, SortDirection, IQuery, ICurrency } from "../../classes";
 import { DBProvider } from "../util";
 import crypto from "crypto";
+import { _get } from "./[id]/route";
 
 const tableName = 'sales';
 
@@ -44,18 +45,17 @@ export async function POST(req: NextRequest) {
     //auto set values 
     newSale.id = crypto.randomUUID();
     newSale.number = await DBProvider.dbCount(tableName) + 1;
-    
-    return NextResponse.json(
-        await DBProvider.dbInsert(tableName, newSale)
-    )
+    const inserted = await DBProvider.dbInsert(tableName, newSale);
+    const insertedSale = await _get(inserted.id);
+    return NextResponse.json(insertedSale);
 }
 
 export async function PUT(req: NextRequest) {
     const sale = await req.json() as ISale;
+    await DBProvider.dbUpdate(tableName, sale)
+    const updateSale = await _get(sale.id);
 
-    return NextResponse.json(        
-        await DBProvider.dbUpdate(tableName, sale)
-    )
+    return NextResponse.json(updateSale);
 }
 
 
