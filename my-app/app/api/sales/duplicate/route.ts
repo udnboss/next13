@@ -12,6 +12,19 @@ export async function POST(req: NextRequest, res: NextResponse) {
     newSale.id = crypto.randomUUID();
     newSale.number = await DBProvider.dbCount(tableName) + 1;
 
+    const lastMonth = new Date();    
+    lastMonth.setMonth(lastMonth.getMonth() - 1);
+    lastMonth.setDate(1);
+
+    const nextMonth = new Date();    
+    nextMonth.setMonth(nextMonth.getMonth() + 1);
+    nextMonth.setDate(1);
+
+    newSale.reference = lastMonth.toLocaleString('default', { month: 'long' }) + ' ' + lastMonth.getFullYear();
+    newSale.date = new Date().toISOString().slice(0, 10);
+    newSale.reference_date = lastMonth.toISOString().slice(0, 10);
+    newSale.due_date = nextMonth.toISOString().slice(0, 10);
+
     await DBProvider.dbBegin();
 
     try{
@@ -22,6 +35,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
             for(const item of newSale.items) {
                 item.id = crypto.randomUUID();
                 item.sale_id = newSale.id;
+                item.description = newSale.reference;
                 await DBProvider.dbInsert('saleitems', item);
             }
         }

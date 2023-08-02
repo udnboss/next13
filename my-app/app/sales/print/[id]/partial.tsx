@@ -24,8 +24,28 @@ export default function PrintPartialSale({sale, onCancel}: {sale:ISale, onCancel
             putOnlyUsedFonts:true
            });
         doc.html(content, {
-            callback: function (doc) {                    
-                doc.save(fileName);
+            callback: async (doc) => {   
+                if( (window as any).showSaveFilePicker ) {
+                    var blob = doc.output('blob');
+                    const opts = {
+                        suggestedName: fileName,
+                        types: [
+                          {
+                            accept: {
+                              "application/pdf": [".pdf"],
+                            },
+                          },
+                        ],
+                      };
+                    const handle = await (window as any).showSaveFilePicker(opts);
+                    const writable = await handle.createWritable();
+                    await writable.write( blob );
+                    writable.close();
+                  }
+                else {
+                    doc.save(fileName);
+                }                 
+                
             },
             x: 10,
             y: 10,

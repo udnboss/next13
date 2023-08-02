@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { ICondition, ICustomer, ICustomerQuery, ISort, Operator, SortDirection, IQueryResult } from "../../classes";
+import { ICondition, ICustomer, ICustomerQuery, ISort, Operator, SortDirection, IQueryResult, IQuery, ICurrency } from "../../classes";
 import { DBProvider } from "../util";
 
 const tableName = 'customers';
@@ -8,12 +8,12 @@ const tableName = 'customers';
 //handles client calls
 export async function GET(req: NextRequest) {
     return NextResponse.json(
-        await get(req.nextUrl.searchParams)
+        await _get(req.nextUrl.searchParams)
     )
 }
 
 //use for server side calls
-export async function get(searchParams:URLSearchParams) {
+export async function _get(searchParams:URLSearchParams) {
     const params = Object.fromEntries(searchParams) as unknown as ICustomerQuery;
 
     var where:ICondition[] = [];
@@ -26,8 +26,16 @@ export async function get(searchParams:URLSearchParams) {
             sort = [{column: params.sortby, direction: params.sortdir == 'asc' ? SortDirection.Asc : SortDirection.Desc} as ISort];
     }
 
-    const result = await DBProvider.dbSelect(tableName, where, sort) as IQueryResult<ICustomerQuery, ICustomer>;
-    return result;
+    const queryResult = await DBProvider.dbSelect(tableName, where, sort) as IQueryResult<ICustomerQuery, ICustomer>;
+
+    const currencies = await DBProvider.dbSelect('currencies') as IQueryResult<IQuery, ICurrency>;
+    const currenciesLookup = Object.fromEntries(currencies.result.map(x => [x.id, x]));
+
+    for(const record of queryResult.result) {
+        record.currency = record.currency_id != null ? currenciesLookup[record.currency_id] : null;
+    }
+    
+    return queryResult;
 }
 
 export async function POST(req: NextRequest) {

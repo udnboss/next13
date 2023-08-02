@@ -3,7 +3,7 @@
 // import { ClientUtil } from "../../util";
 import { ICustomer, ICustomerQuery, IQueryResult } from "../../app/classes";
 import CustomersListPage from "./list";
-import { get } from "../../app/api/customers/route"
+import { _get } from "../../app/api/customers/route"
 import { NextRequest } from "next/server";
 import CustomersLayout from "./layout";
 import RootLayout from "../layout";
@@ -13,7 +13,7 @@ export async function getServerSideProps(context) {
     // console.log('getServerSideProps');
     context.res.setHeader('Cache-Control', 'public, s-maxage=1');
     const searchParams = new URLSearchParams(context.query);
-    const results = await get(searchParams) as unknown as IQueryResult<ICustomerQuery, ICustomer>; 
+    const results = await _get(searchParams) as unknown as IQueryResult<ICustomerQuery, ICustomer>; 
     // console.dir(results.result);
     const customers = results.result;
 

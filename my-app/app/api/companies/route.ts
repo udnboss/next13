@@ -8,12 +8,12 @@ const tableName = 'companies';
 //handles client calls
 export async function GET(req: NextRequest) {
     return NextResponse.json(
-        await get(req.nextUrl.searchParams)
+        await _get(req.nextUrl.searchParams)
     )
 }
 
 //use for server side calls
-export async function get(searchParams:URLSearchParams) {
+export async function _get(searchParams:URLSearchParams) {
     const params = Object.fromEntries(searchParams) as unknown as ICompanyQuery;
 
     var where:ICondition[] = [];

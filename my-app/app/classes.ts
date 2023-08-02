@@ -63,6 +63,7 @@ export interface ICustomer extends IEntity {
     contact: string | null;
     currency_id: string | null;
     currency?: ICurrency | null;
+    payment_term: number | null;
     sales?: ISale[];
 }
 export interface ICurrency extends IEntity {
